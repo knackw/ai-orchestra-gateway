@@ -14,7 +14,7 @@ This document tracks the implementation tasks for the **AI Legal Ops** multi-ten
 
 **Blockers:** None  
 **Team Size:** 1-2 developers  
-**Progress:** 2/52 tasks completed (4%)
+**Progress:** 3/52 tasks completed (6%)
 
 ---
 
@@ -37,7 +37,7 @@ This document tracks the implementation tasks for the **AI Legal Ops** multi-ten
 
 ### 1.2 Project Structure & Infrastructure
 
-- [ ] **INFRA-001**: Initialize Python/FastAPI Project
+- [x] **INFRA-001**: Initialize Python/FastAPI Project
   - Create directory structure (`app/`, `app/services/`, `app/api/`, `app/core/`, `app/tests/`)
   - Setup `pyproject.toml` with Ruff configuration
   - Configure pre-commit hooks (Ruff, pytest)
@@ -381,7 +381,7 @@ This document tracks the implementation tasks for the **AI Legal Ops** multi-ten
 **This Week's Tasks:**
 - [ ] **DEV-001**: Install Supabase CLI
 - [x] **DEV-002**: Create `.env.example`
-- [ ] **INFRA-001**: Init FastAPI project
+- [x] **INFRA-001**: Init FastAPI project
 - [ ] **INFRA-002**: Setup Supabase (production)
 
 **Expected Outcome:** Development environment ready for coding

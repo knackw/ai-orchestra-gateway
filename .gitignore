@@ -49,3 +49,6 @@ Thumbs.db
 
 # Node
 node_modules/
+
+# Agent
+.agent/
