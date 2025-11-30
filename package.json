@@ -1,6 +1,6 @@
 {
   "name": "ai-orchestra-gateway",
-  "version": "2.0.3",
+  "version": "2.0.4",
   "description": "Enterprise-grade, multi-tenant middleware platform for secure AI orchestration with GDPR-compliant privacy enforcement",
   "main": "index.js",
   "type": "module",

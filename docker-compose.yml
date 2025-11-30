@@ -1,0 +1,18 @@
+version: '3.8'
+
+services:
+  api:
+    build: .
+    container_name: ai_legal_proxy
+    restart: always
+    ports:
+      - "8000:8000"
+    env_file:
+      - .env
+    healthcheck:
+      test: [ "CMD", "curl", "-f", "http://localhost:8000/health" ]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+    # volumes:
+    #   - .:/app  # Optional: For local development with hot reload (override CMD in override file)

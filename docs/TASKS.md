@@ -14,7 +14,7 @@ This document tracks the implementation tasks for the **AI Legal Ops** multi-ten
 
 **Blockers:** None  
 **Team Size:** 1-2 developers  
-**Progress:** 4/52 tasks completed (8%)
+**Progress:** 5/52 tasks completed (10%)
 
 ---
 
@@ -49,7 +49,7 @@ This document tracks the implementation tasks for the **AI Legal Ops** multi-ten
   - Configure connection pooling
   - Test connection from local environment
   
-- [ ] **INFRA-003**: Configure Docker & CI/CD
+- [x] **INFRA-003**: Configure Docker & CI/CD
   - Write production `Dockerfile` (multi-stage build)
   - Create `docker-compose.yml` for local testing
   - Setup GitHub Actions workflow (`.github/workflows/ci-cd.yaml`)
