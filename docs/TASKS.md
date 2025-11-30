@@ -14,7 +14,7 @@ This document tracks the implementation tasks for the **AI Legal Ops** multi-ten
 
 **Blockers:** None  
 **Team Size:** 1-2 developers  
-**Progress:** 3/52 tasks completed (6%)
+**Progress:** 4/52 tasks completed (8%)
 
 ---
 
@@ -43,7 +43,7 @@ This document tracks the implementation tasks for the **AI Legal Ops** multi-ten
   - Configure pre-commit hooks (Ruff, pytest)
   - Create `requirements.txt` with dependencies (FastAPI, Pydantic, httpx, pytest, supabase-py)
   
-- [ ] **INFRA-002**: Setup Production Supabase (Frankfurt)
+- [x] **INFRA-002**: Setup Production Supabase (Frankfurt)
   - Create Supabase project in Frankfurt region
   - Generate API keys (anon, service_role)
   - Configure connection pooling
@@ -382,7 +382,7 @@ This document tracks the implementation tasks for the **AI Legal Ops** multi-ten
 - [ ] **DEV-001**: Install Supabase CLI
 - [x] **DEV-002**: Create `.env.example`
 - [x] **INFRA-001**: Init FastAPI project
-- [ ] **INFRA-002**: Setup Supabase (production)
+- [x] **INFRA-002**: Setup Supabase (production)
 
 **Expected Outcome:** Development environment ready for coding
 
