@@ -1,6 +1,6 @@
 # Implementation Tasks: AI Legal Ops
 
-**Last Updated:** 2025-11-29  
+**Last Updated:** 2025-11-30  
 **Status:** 🔴 Phase 1 - MVP Core in Progress  
 **Target Completion:** Week 7 (Q1 2026)
 
@@ -14,7 +14,7 @@ This document tracks the implementation tasks for the **AI Legal Ops** multi-ten
 
 **Blockers:** None  
 **Team Size:** 1-2 developers  
-**Progress:** 0/52 tasks completed (0%)
+**Progress:** 2/52 tasks completed (4%)
 
 ---
 
@@ -22,13 +22,13 @@ This document tracks the implementation tasks for the **AI Legal Ops** multi-ten
 
 ### 1.1 Local Development Setup
 
-- [ ] **DEV-001**: Install Supabase CLI globally
-  - Install via `npm install -g supabase`
-  - Initialize project with `supabase init`
-  - Start local instance with `supabase start`
+- [x] **DEV-001**: Install Supabase CLI
+  - Install via `npm install supabase`
+  - Initialize project with `npx supabase init`
+  - Start local instance with `npx supabase start`
   - Verify Studio UI at `http://localhost:54323`
   
-- [ ] **DEV-002**: Create comprehensive `.env.example`
+- [x] **DEV-002**: Create comprehensive `.env.example`
   - Document all required environment variables
   - Include Supabase local/production URLs
   - Add AI provider API keys (Anthropic, Scaleway)
@@ -380,7 +380,7 @@ This document tracks the implementation tasks for the **AI Legal Ops** multi-ten
 
 **This Week's Tasks:**
 - [ ] **DEV-001**: Install Supabase CLI
-- [ ] **DEV-002**: Create `.env.example`
+- [x] **DEV-002**: Create `.env.example`
 - [ ] **INFRA-001**: Init FastAPI project
 - [ ] **INFRA-002**: Setup Supabase (production)
 

@@ -1,6 +1,6 @@
 {
   "name": "ai-orchestra-gateway",
-  "version": "2.0.0",
+  "version": "2.0.1",
   "description": "Enterprise-grade, multi-tenant middleware platform for secure AI orchestration with GDPR-compliant privacy enforcement",
   "main": "index.js",
   "type": "module",
@@ -54,9 +54,8 @@
     "npm": ">=9.0.0"
   },
   "devDependencies": {
-    "supabase": "^1.200.3"
+    "supabase": "^1.226.4"
   },
-  "dependencies": {},
   "config": {
     "pythonVersion": "3.11",
     "framework": "FastAPI",
