@@ -1,0 +1,87 @@
+{
+  "name": "ai-orchestra-gateway",
+  "version": "2.0.0",
+  "description": "Enterprise-grade, multi-tenant middleware platform for secure AI orchestration with GDPR-compliant privacy enforcement",
+  "main": "index.js",
+  "type": "module",
+  "scripts": {
+    "supabase:start": "supabase start",
+    "supabase:stop": "supabase stop",
+    "supabase:status": "supabase status",
+    "supabase:reset": "supabase db reset",
+    "supabase:migrations": "supabase migration list",
+    "dev:setup": "npm run supabase:start && echo 'Supabase is running. Now start Python backend with: source venv/bin/activate && uvicorn app.main:app --reload'",
+    "lint": "ruff check .",
+    "test": "pytest tests/ --cov=app --cov-report=term-missing",
+    "test:integration": "pytest tests/integration/ -v",
+    "test:watch": "pytest-watch",
+    "docker:build": "docker-compose build",
+    "docker:up": "docker-compose up -d",
+    "docker:down": "docker-compose down",
+    "docker:logs": "docker-compose logs -f",
+    "health": "curl http://localhost:8000/health"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/knackw/ai-orchestra-gateway.git"
+  },
+  "keywords": [
+    "ai",
+    "gateway",
+    "middleware",
+    "privacy",
+    "gdpr",
+    "dsgvo",
+    "multi-tenant",
+    "fastapi",
+    "anthropic",
+    "claude",
+    "saas",
+    "proxy",
+    "billing",
+    "pii-shield"
+  ],
+  "author": "AI Legal Ops Team",
+  "license": "UNLICENSED",
+  "private": true,
+  "bugs": {
+    "url": "https://github.com/knackw/ai-orchestra-gateway/issues"
+  },
+  "homepage": "https://github.com/knackw/ai-orchestra-gateway#readme",
+  "engines": {
+    "node": ">=18.0.0",
+    "npm": ">=9.0.0"
+  },
+  "devDependencies": {
+    "supabase": "^1.200.3"
+  },
+  "dependencies": {},
+  "config": {
+    "pythonVersion": "3.11",
+    "framework": "FastAPI",
+    "database": "Supabase (PostgreSQL 15+)",
+    "deployment": "Docker Compose",
+    "region": "EU (Frankfurt)"
+  },
+  "projectInfo": {
+    "status": "Planning Phase",
+    "phase": "Phase 1 (MVP Core)",
+    "targetLaunch": "Q1 2026",
+    "compliance": [
+      "GDPR/DSGVO",
+      "EU Data Residency",
+      "PII Redaction",
+      "Audit Trail"
+    ],
+    "coreServices": [
+      "AI Gateway Service",
+      "Privacy Shield Service",
+      "Billing Service",
+      "Admin Dashboard"
+    ],
+    "aiProviders": [
+      "Anthropic Claude",
+      "Scaleway"
+    ]
+  }
+}
