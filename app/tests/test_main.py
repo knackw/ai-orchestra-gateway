@@ -12,4 +12,8 @@ def test_read_main():
 def test_health_check():
     response = client.get("/health")
     assert response.status_code == 200
-    assert response.json() == {"status": "ok"}
+    data = response.json()
+    # Check that new comprehensive health check response has the expected structure
+    assert "status" in data
+    assert "database" in data
+    assert "uptime_seconds" in data

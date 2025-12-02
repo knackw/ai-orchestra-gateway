@@ -14,7 +14,7 @@ This document tracks the implementation tasks for the **AI Legal Ops** multi-ten
 
 **Blockers:** None  
 **Team Size:** 1-2 developers  
-**Progress:** 5/52 tasks completed (10%)
+**Progress:** 6/52 tasks completed (12%)
 
 ---
 
@@ -55,7 +55,7 @@ This document tracks the implementation tasks for the **AI Legal Ops** multi-ten
   - Setup GitHub Actions workflow (`.github/workflows/ci-cd.yaml`)
   - Configure automated linting (Ruff) + testing (pytest)
   
-- [ ] **INFRA-004**: Implement Health Check Endpoint
+- [x] **INFRA-004**: Implement Health Check Endpoint
   - Create `/health` endpoint in FastAPI
   - Return database connection status
   - Include uptime metrics

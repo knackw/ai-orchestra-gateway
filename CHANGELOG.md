@@ -5,6 +5,19 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.1.1] - 2025-12-02
+
+### Added
+- Implemented comprehensive `/health` endpoint with database connectivity check
+- Added uptime metrics tracking (app start time based)
+- Created `app/core/health.py` with structured health check service
+- Added Pydantic models for health response validation
+- Created comprehensive test suite for health check (11 tests, 100% coverage)
+
+### Changed
+- Enhanced `/health` endpoint from simple status to comprehensive system check
+- Updated application version from 0.1.0 to 0.1.1
+
 ## [2.0.4] - 2025-11-30
 
 ### Added
