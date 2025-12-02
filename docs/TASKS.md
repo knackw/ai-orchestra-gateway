@@ -14,7 +14,7 @@ This document tracks the implementation tasks for the **AI Legal Ops** multi-ten
 
 **Blockers:** None  
 **Team Size:** 1-2 developers  
-**Progress:** 6/52 tasks completed (12%)
+**Progress:** 7/52 tasks completed (13%)
 
 ---
 
@@ -63,7 +63,7 @@ This document tracks the implementation tasks for the **AI Legal Ops** multi-ten
 
 ### 1.3 Core Gateway Logic
 
-- [ ] **AI-001**: Implement Abstract Provider Interface
+- [x] **AI-001**: Implement Abstract Provider Interface
   - Create `app/services/ai_gateway.py`
   - Define `AIProvider` base class (Abstract)
   - Methods: `generate(prompt: str) -> tuple[str, int]` (text, token_count)

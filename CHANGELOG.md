@@ -5,6 +5,21 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.1.2] - 2025-12-02
+
+### Added
+- Implemented abstract AI provider interface (`AIProvider` base class)
+- Created provider registry pattern for managing multiple AI providers
+- Added custom exceptions hierarchy (`ProviderError`, `ProviderNotFoundError`, `ProviderAPIError`, `ProviderConfigError`)
+- Implemented `AIGateway` facade for provider access
+- Created comprehensive test suite with 25 tests for gateway functionality
+- Added global registry singleton pattern
+
+### Technical
+- Using Python ABC module for abstract base class
+- Type hints compatible with Python 3.8+ (using `Tuple`, `List` from typing)
+- 97% test coverage on new gateway module
+
 ## [0.1.1] - 2025-12-02
 
 ### Added
