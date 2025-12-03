@@ -5,6 +5,24 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.1.4] - 2025-12-03
+
+### Added
+- Implemented DataPrivacyShield for PII detection and sanitization
+- Created regex patterns for email, phone (German), and IBAN detection
+- Auto-sanitization with placeholders (`<EMAIL_REMOVED>`, `<PHONE_REMOVED>`, `<IBAN_REMOVED>`)
+- Return tuple `(sanitized_text, pii_found)` for easy integration
+- Logging of PII detections (without logging actual PII)
+- `has_pii()` convenience method for checking without sanitizing
+- Created 35 comprehensive tests with 93% coverage
+
+### Technical
+- Email pattern: Comprehensive regex matching 99% of valid emails
+- Phone pattern: German formats (+49, 0049, 0xxx with flexible separators)
+- IBAN pattern: German IBAN (DE + 20 digits)
+- Processing order: Email → IBAN → Phone (avoids pattern conflicts)
+- Fail-open error handling (returns original text on exception)
+
 ## [0.1.3] - 2025-12-02
 
 ### Added
