@@ -5,13 +5,41 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.1.5] - 2025-12-03
+
+### Added
+- Implemented `/v1/generate` POST endpoint for AI text generation
+- Created Pydantic request model (`GenerateRequest`) with validation
+- Created Pydantic response model (`GenerateResponse`) with structured output
+- Integrated DataPrivacyShield for automatic prompt sanitization
+- Integrated AnthropicProvider for AI response generation
+- Credit calculation system (1:1 with tokens for MVP)
+- Comprehensive error handling (validation errors, AI provider errors)
+- Added `pii_detected` field in response for transparency
+- Created 12 comprehensive endpoint tests (100% coverage on generate.py)
+
+### Changed
+- Updated FastAPI app version to 0.1.5 in main.py
+- Included `/v1/generate` router with `/v1` prefix
+
+### Technical
+- Request validation: prompt (1-10000 chars), license_key (non-empty)
+- Response format: `{content, tokens_used, credits_deducted, pii_detected}`
+- Processing flow: Validate → Sanitize → Generate → Calculate → Return
+- Error responses: 422 (validation), 500 (AI errors)
+- Logging: Sanitized logging (no PII in logs)
+
+### Notes
+- License key accepted but not yet validated (will be in API-002)
+- Credit deduction calculation only (DB update will be in BILLING-001)
+
 ## [0.1.4] - 2025-12-03
 
 ### Added
 - Implemented DataPrivacyShield for PII detection and sanitization
 - Created regex patterns for email, phone (German), and IBAN detection
 - Auto-sanitization with placeholders (`<EMAIL_REMOVED>`, `<PHONE_REMOVED>`, `<IBAN_REMOVED>`)
-- Return tuple `(sanitized_text, pii_found)` for easy integration
+- Return tuple `(sanitized_text, pii_found: bool)` for easy integration
 - Logging of PII detections (without logging actual PII)
 - `has_pii()` convenience method for checking without sanitizing
 - Created 35 comprehensive tests with 93% coverage
