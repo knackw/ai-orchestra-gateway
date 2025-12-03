@@ -43,6 +43,10 @@ unfixable = []
 [tool.ruff.lint.isort]
 known-first-party = ["app"]
 
+[tool.ruff.lint.per-file-ignores]
+# B008: Ignore "function call in default argument" for FastAPI Depends() pattern
+"app/api/**/*.py" = ["B008"]
+
 [tool.pytest.ini_options]
 minversion = "6.0"
 addopts = "-ra -q --cov=app"
@@ -52,3 +56,5 @@ testpaths = [
 pythonpath = [
     ".",
 ]
+asyncio_mode = "auto"
+asyncio_default_fixture_loop_scope = "function"
