@@ -5,6 +5,24 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.1.3] - 2025-12-02
+
+### Added
+- Implemented Anthropic provider for Claude API integration
+- Created `AnthropicProvider` class implementing `AIProvider` interface
+- Integrated with Claude 3.5 Sonnet via httpx async client
+- Added x-api-key authentication for Anthropic API
+- Comprehensive request/response handling
+- Token counting from API usage data (input + output tokens)
+- Robust error handling (401, 429, 500, network errors)
+- Created 18 comprehensive tests with 97% coverage
+
+### Technical
+- Using httpx.AsyncClient for async HTTP requests
+- Model: claude-3-5-sonnet-20241022
+- Default max_tokens: 1024
+- Proper error wrapping in ProviderAPIError
+
 ## [0.1.2] - 2025-12-02
 
 ### Added

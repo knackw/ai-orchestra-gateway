@@ -14,7 +14,7 @@ This document tracks the implementation tasks for the **AI Legal Ops** multi-ten
 
 **Blockers:** None  
 **Team Size:** 1-2 developers  
-**Progress:** 7/52 tasks completed (13%)
+**Progress:** 8/52 tasks completed (15%)
 
 ---
 
@@ -69,7 +69,7 @@ This document tracks the implementation tasks for the **AI Legal Ops** multi-ten
   - Methods: `generate(prompt: str) -> tuple[str, int]` (text, token_count)
   - Add provider registry pattern
   
-- [ ] **AI-002**: Implement Anthropic Adapter
+- [x] **AI-002**: Implement Anthropic Adapter
   - Create `AnthropicProvider` class
   - Integrate with Claude API (httpx client)
   - Handle authentication (Bearer token)
