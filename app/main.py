@@ -11,7 +11,7 @@ APP_START_TIME = datetime.now(timezone.utc)
 app = FastAPI(
     title="AI Legal Ops Gateway",
     description="Multi-tenant middleware for AI orchestration with privacy enforcement",
-    version="0.1.5",
+    version="0.1.6",
 )
 
 # Initialize health checker

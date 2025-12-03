@@ -1,12 +1,29 @@
 """
-Unit tests for /v1/generate endpoint.
+Unit tests for /v1/generate endpoint (with API key validation).
 """
 
 from unittest.mock import AsyncMock, patch
 
 from fastapi.testclient import TestClient
 
+from app.core.security import LicenseInfo, get_current_license
 from app.main import app
+
+
+# Create mock license for dependency override
+def get_mock_license():
+    """Mock license dependency for testing."""
+    return LicenseInfo(
+        license_key="lic_test123",
+        tenant_id="tenant-mock-123",
+        credits_remaining=1000,
+        is_active=True,
+        expires_at=None,
+    )
+
+
+# Override dependency for all tests
+app.dependency_overrides[get_current_license] = get_mock_license
 
 client = TestClient(app)
 
@@ -16,32 +33,25 @@ class TestGenerateEndpoint:
 
     def test_endpoint_exists(self):
         """Test that /v1/generate endpoint exists."""
-        # OPTIONS request to check endpoint
         response = client.options("/v1/generate")
-        assert response.status_code in [200, 405]  # 405 if OPTIONS not allowed
+        assert response.status_code in [200, 405]
 
     @patch("app.api.v1.generate.AnthropicProvider")
     @patch("app.api.v1.generate.DataPrivacyShield")
     def test_successful_generation(self, mock_shield, mock_provider):
         """Test successful AI generation."""
-        # Mock DataPrivacyShield
         mock_shield.sanitize.return_value = ("sanitized prompt", False)
 
-        # Mock AnthropicProvider
         mock_instance = AsyncMock()
         mock_instance.generate.return_value = ("Generated response", 127)
         mock_provider.return_value = mock_instance
 
-        # Make request
         response = client.post(
             "/v1/generate",
-            json={
-                "prompt": "Write a professional email",
-                "license_key": "lic_test123",
-            },
+            headers={"X-License-Key": "lic_test123"},
+            json={"prompt": "Write a professional email"},
         )
 
-        # Verify response
         assert response.status_code == 200
         data = response.json()
 
@@ -59,27 +69,21 @@ class TestGenerateEndpoint:
     @patch("app.api.v1.generate.DataPrivacyShield")
     def test_generation_with_pii_detected(self, mock_shield, mock_provider):
         """Test generation when PII is detected."""
-        # Mock DataPrivacyShield - PII found
         mock_shield.sanitize.return_value = (
             "Email <EMAIL_REMOVED> about meeting",
             True,
         )
 
-        # Mock AnthropicProvider
         mock_instance = AsyncMock()
         mock_instance.generate.return_value = ("Response about meeting", 95)
         mock_provider.return_value = mock_instance
 
-        # Make request with PII
         response = client.post(
             "/v1/generate",
-            json={
-                "prompt": "Email john@example.com about meeting",
-                "license_key": "lic_test",
-            },
+            headers={"X-License-Key": "lic_test123"},
+            json={"prompt": "Email john@example.com about meeting"},
         )
 
-        # Verify response
         assert response.status_code == 200
         data = response.json()
 
@@ -99,12 +103,13 @@ class TestGenerateEndpoint:
 
         response = client.post(
             "/v1/generate",
-            json={"prompt": "Test", "license_key": "lic_test"},
+            headers={"X-License-Key": "lic_test123"},
+            json={"prompt": "Test"},
         )
 
         data = response.json()
         assert data["tokens_used"] == 250
-        assert data["credits_deducted"] == 250  # 1:1 ratio
+        assert data["credits_deducted"] == 250
 
 
 class TestGenerateValidation:
@@ -114,7 +119,8 @@ class TestGenerateValidation:
         """Test that empty prompt is rejected."""
         response = client.post(
             "/v1/generate",
-            json={"prompt": "", "license_key": "lic_test"},
+            headers={"X-License-Key": "lic_test123"},
+            json={"prompt": ""},
         )
 
         assert response.status_code == 422
@@ -124,37 +130,58 @@ class TestGenerateValidation:
     def test_missing_prompt_rejected(self):
         """Test that missing prompt is rejected."""
         response = client.post(
-            "/v1/generate", json={"license_key": "lic_test"}
-        )
-
-        assert response.status_code == 422
-
-    def test_missing_license_key_rejected(self):
-        """Test that missing license_key is rejected."""
-        response = client.post(
-            "/v1/generate", json={"prompt": "Test prompt"}
-        )
-
-        assert response.status_code == 422
-
-    def test_empty_license_key_rejected(self):
-        """Test that empty license_key is rejected."""
-        response = client.post(
-            "/v1/generate", json={"prompt": "Test", "license_key": ""}
+            "/v1/generate",
+            headers={"X-License-Key": "lic_test123"},
+            json={},
         )
 
         assert response.status_code == 422
 
     def test_prompt_too_long_rejected(self):
         """Test that prompt exceeding max length is rejected."""
-        long_prompt = "a" * 10001  # Max is 10000
+        long_prompt = "a" * 10001
 
         response = client.post(
             "/v1/generate",
-            json={"prompt": long_prompt, "license_key": "lic_test"},
+            headers={"X-License-Key": "lic_test123"},
+            json={"prompt": long_prompt},
         )
 
         assert response.status_code == 422
+
+
+class TestGenerateAuthentication:
+    """Tests for authentication (header validation)."""
+
+    def test_missing_license_header_rejected(self):
+        """Test that missing X-License-Key header is rejected."""
+        # Temporarily remove override to test auth
+        app.dependency_overrides.pop(get_current_license, None)
+
+        response = client.post(
+            "/v1/generate", json={"prompt": "Test prompt"}
+        )
+
+        assert response.status_code == 401
+
+        # Restore override
+        app.dependency_overrides[get_current_license] = get_mock_license
+
+    def test_empty_license_header_rejected(self):
+        """Test that empty X-License-Key header is rejected."""
+        # Temporarily remove override
+        app.dependency_overrides.pop(get_current_license, None)
+
+        response = client.post(
+            "/v1/generate",
+            headers={"X-License-Key": ""},
+            json={"prompt": "Test"},
+        )
+
+        assert response.status_code == 401
+
+        # Restore override
+        app.dependency_overrides[get_current_license] = get_mock_license
 
 
 class TestGenerateErrorHandling:
@@ -168,16 +195,14 @@ class TestGenerateErrorHandling:
 
         mock_shield.sanitize.return_value = ("prompt", False)
 
-        # Mock provider to raise error
         mock_instance = AsyncMock()
-        mock_instance.generate.side_effect = ProviderAPIError(
-            "API error"
-        )
+        mock_instance.generate.side_effect = ProviderAPIError("API error")
         mock_provider.return_value = mock_instance
 
         response = client.post(
             "/v1/generate",
-            json={"prompt": "Test", "license_key": "lic_test"},
+            headers={"X-License-Key": "lic_test123"},
+            json={"prompt": "Test"},
         )
 
         assert response.status_code == 500
@@ -185,15 +210,15 @@ class TestGenerateErrorHandling:
         assert "detail" in data
         assert "generation failed" in data["detail"].lower()
 
-    @patch("app.api.v1.generate.AnthropicProvider")
     @patch("app.api.v1.generate.DataPrivacyShield")
-    def test_unexpected_error_returns_500(self, mock_shield, mock_provider):
+    def test_unexpected_error_returns_500(self, mock_shield):
         """Test that unexpected errors return 500."""
         mock_shield.sanitize.side_effect = Exception("Unexpected error")
 
         response = client.post(
             "/v1/generate",
-            json={"prompt": "Test", "license_key": "lic_test"},
+            headers={"X-License-Key": "lic_test123"},
+            json={"prompt": "Test"},
         )
 
         assert response.status_code == 500
@@ -207,31 +232,24 @@ class TestGenerateIntegration:
     @patch("app.api.v1.generate.AnthropicProvider")
     def test_real_privacy_shield_integration(self, mock_provider):
         """Test with real DataPrivacyShield (not mocked)."""
-        # Mock only the provider
         mock_instance = AsyncMock()
         mock_instance.generate.return_value = ("Sanitized response", 100)
         mock_provider.return_value = mock_instance
 
-        # Request with PII
         response = client.post(
             "/v1/generate",
-            json={
-                "prompt": "Contact me at user@example.com or +49 123 456789",
-                "license_key": "lic_test",
-            },
+            headers={"X-License-Key": "lic_test123"},
+            json={"prompt": "Contact me at user@example.com or +49 123 456789"},
         )
 
         assert response.status_code == 200
         data = response.json()
 
-        # Privacy shield should detect PII
         assert data["pii_detected"] is True
 
-        # Verify sanitized prompt was sent to provider
         mock_instance.generate.assert_called_once()
         call_args = mock_instance.generate.call_args[0][0]
 
-        # Email and phone should be removed
         assert "user@example.com" not in call_args
         assert "+49 123 456789" not in call_args
         assert "<EMAIL_REMOVED>" in call_args

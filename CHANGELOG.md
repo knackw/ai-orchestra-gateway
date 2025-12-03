@@ -1,3 +1,30 @@
+## [0.1.6] - 2025-12-03
+
+### Added
+- Implemented API key validation middleware via FastAPI dependency injection
+- Created app/core/security.py with LicenseInfo class and get_current_license dependency
+- Added validate_license_key function to query Supabase licenses table
+- Check license active status, expiration date, and remaining credits
+- Created SQL migration for licenses and tenants tables with demo data
+- Added 12 comprehensive security tests (100% coverage on security.py)
+
+### Changed  
+- Updated /v1/generate endpoint to use X-License-Key header (via Depends)
+- Removed license_key field from GenerateRequest body
+- Updated 12 generate endpoint tests for header-based authentication
+- Changed authentication method from request body to HTTP header
+
+### Security
+- Real-time license validation against Supabase on every request
+- Error codes: 401 (missing header), 403 (invalid/inactive/expired), 402 (no credits)
+- Automatic credit balance checking
+- FastAPI dependency injection for selective route protection
+
+### Technical
+- Using Supabase client for direct database queries
+- Header validation via FastAPI Header() parameter
+- Test mocking via app.dependency_overrides for clean testing
+- SQL migration includes triggers for updated_at timestamps
 # Changelog
 
 All notable changes to this project will be documented in this file.

@@ -10,9 +10,10 @@ Provides /v1/generate endpoint for generating AI responses with:
 
 import logging
 
-from fastapi import APIRouter, HTTPException
+from fastapi import APIRouter, Depends, HTTPException
 from pydantic import BaseModel, Field
 
+from app.core.security import LicenseInfo, get_current_license
 from app.services.ai_gateway import ProviderAPIError
 from app.services.anthropic_provider import AnthropicProvider
 from app.services.privacy import DataPrivacyShield
@@ -31,15 +32,11 @@ class GenerateRequest(BaseModel):
         max_length=10000,
         description="User prompt for AI generation",
     )
-    license_key: str = Field(
-        ..., min_length=1, description="Tenant license key for authentication"
-    )
 
     class Config:
         json_schema_extra = {
             "example": {
                 "prompt": "Write a professional email to my colleague",
-                "license_key": "lic_abc123def456",
             }
         }
 
@@ -68,23 +65,31 @@ class GenerateResponse(BaseModel):
 
 
 @router.post("/generate", response_model=GenerateResponse)
-async def generate_content(request: GenerateRequest):
+async def generate_content(
+    request: GenerateRequest,
+    license: LicenseInfo = Depends(get_current_license),
+):
     """
     Generate AI response from user prompt.
 
     This endpoint:
-    1. Sanitizes the prompt for PII (emails, phones, IBANs)
-    2. Generates AI response using Anthropic Claude
-    3. Calculates tokens and credits
-    4. Returns formatted response
+    1. Validates license key from X-License-Key header
+    2. Sanitizes the prompt for PII (emails, phones, IBANs)
+    3. Generates AI response using Anthropic Claude
+    4. Calculates tokens and credits
+    5. Returns formatted response
 
     Args:
-        request: GenerateRequest with prompt and license_key
+        request: GenerateRequest with prompt
+        license: Validated license info (from X-License-Key header)
 
     Returns:
         GenerateResponse with content, tokens, credits, and pii flag
 
     Raises:
+        HTTPException 401: Missing X-License-Key header
+        HTTPException 403: Invalid/inactive/expired license
+        HTTPException 402: No credits remaining
         HTTPException 422: Validation error (automatic)
         HTTPException 500: AI generation failed
     """
@@ -94,13 +99,12 @@ async def generate_content(request: GenerateRequest):
 
         if pii_found:
             logger.warning(
-                "PII detected in prompt for license_key=%s",
-                request.license_key[:10] + "...",
+                "PII detected in prompt for tenant_id=%s",
+                license.tenant_id,
             )
 
         # Step 2: Generate AI response
-        # Note: license_key validation will be added in API-002
-        # For MVP, we accept any non-empty string
+        # License already validated by dependency
         provider = AnthropicProvider()
 
         try:
@@ -113,16 +117,15 @@ async def generate_content(request: GenerateRequest):
             ) from e
 
         # Step 3: Calculate credits (1:1 with tokens for MVP)
-        # Future: Make configurable per model/tenant
         credits = tokens
 
         # Note: Actual credit deduction will be in BILLING-001
-        # For now, we just return the calculated amount
 
         # Step 4: Return response
         logger.info(
             f"Generated response: {tokens} tokens, "
-            f"{credits} credits, PII detected: {pii_found}"
+            f"{credits} credits, PII detected: {pii_found} "
+            f"(tenant: {license.tenant_id})"
         )
 
         return GenerateResponse(
