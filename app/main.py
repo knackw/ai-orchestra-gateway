@@ -1,9 +1,19 @@
+import logging
 from datetime import datetime, timezone
 
 from fastapi import FastAPI
 
 from app.api.v1 import generate
 from app.core.health import HealthChecker
+from app.core.logging import PrivacyLogFilter
+
+# Configure logging with privacy filter
+logging.basicConfig(
+    level=logging.INFO,
+    format='%(asctime)s - %(name)s - %(levelname)s - %(message)s'
+)
+logger = logging.getLogger()
+logger.addFilter(PrivacyLogFilter())
 
 # Track application start time for uptime calculation
 APP_START_TIME = datetime.now(timezone.utc)
@@ -11,7 +21,7 @@ APP_START_TIME = datetime.now(timezone.utc)
 app = FastAPI(
     title="AI Legal Ops Gateway",
     description="Multi-tenant middleware for AI orchestration with privacy enforcement",
-    version="0.1.6",
+    version="0.1.8",
 )
 
 # Initialize health checker

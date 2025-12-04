@@ -36,15 +36,17 @@ class TestGenerateEndpoint:
         response = client.options("/v1/generate")
         assert response.status_code in [200, 405]
 
+    @patch("app.api.v1.generate.BillingService")
     @patch("app.api.v1.generate.AnthropicProvider")
     @patch("app.api.v1.generate.DataPrivacyShield")
-    def test_successful_generation(self, mock_shield, mock_provider):
+    def test_successful_generation(self, mock_shield, mock_provider, mock_billing):
         """Test successful AI generation."""
         mock_shield.sanitize.return_value = ("sanitized prompt", False)
 
         mock_instance = AsyncMock()
         mock_instance.generate.return_value = ("Generated response", 127)
         mock_provider.return_value = mock_instance
+        mock_billing.deduct_credits = AsyncMock(return_value=450)
 
         response = client.post(
             "/v1/generate",
@@ -65,9 +67,10 @@ class TestGenerateEndpoint:
         assert data["credits_deducted"] == 127
         assert data["pii_detected"] is False
 
+    @patch("app.api.v1.generate.BillingService")
     @patch("app.api.v1.generate.AnthropicProvider")
     @patch("app.api.v1.generate.DataPrivacyShield")
-    def test_generation_with_pii_detected(self, mock_shield, mock_provider):
+    def test_generation_with_pii_detected(self, mock_shield, mock_provider, mock_billing):
         """Test generation when PII is detected."""
         mock_shield.sanitize.return_value = (
             "Email <EMAIL_REMOVED> about meeting",
@@ -77,6 +80,7 @@ class TestGenerateEndpoint:
         mock_instance = AsyncMock()
         mock_instance.generate.return_value = ("Response about meeting", 95)
         mock_provider.return_value = mock_instance
+        mock_billing.deduct_credits = AsyncMock(return_value=400)
 
         response = client.post(
             "/v1/generate",
@@ -91,15 +95,17 @@ class TestGenerateEndpoint:
         assert data["tokens_used"] == 95
         assert data["credits_deducted"] == 95
 
+    @patch("app.api.v1.generate.BillingService")
     @patch("app.api.v1.generate.AnthropicProvider")
     @patch("app.api.v1.generate.DataPrivacyShield")
-    def test_credits_equal_tokens(self, mock_shield, mock_provider):
+    def test_credits_equal_tokens(self, mock_shield, mock_provider, mock_billing):
         """Test that credits_deducted equals tokens_used (MVP 1:1)."""
         mock_shield.sanitize.return_value = ("prompt", False)
 
         mock_instance = AsyncMock()
         mock_instance.generate.return_value = ("response", 250)
         mock_provider.return_value = mock_instance
+        mock_billing.deduct_credits = AsyncMock(return_value=250)
 
         response = client.post(
             "/v1/generate",
@@ -229,12 +235,14 @@ class TestGenerateErrorHandling:
 class TestGenerateIntegration:
     """Integration tests with real components."""
 
+    @patch("app.api.v1.generate.BillingService")
     @patch("app.api.v1.generate.AnthropicProvider")
-    def test_real_privacy_shield_integration(self, mock_provider):
+    def test_real_privacy_shield_integration(self, mock_provider, mock_billing):
         """Test with real DataPrivacyShield (not mocked)."""
         mock_instance = AsyncMock()
         mock_instance.generate.return_value = ("Sanitized response", 100)
         mock_provider.return_value = mock_instance
+        mock_billing.deduct_credits = AsyncMock(return_value=400)
 
         response = client.post(
             "/v1/generate",

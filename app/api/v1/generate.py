@@ -16,6 +16,7 @@ from pydantic import BaseModel, Field
 from app.core.security import LicenseInfo, get_current_license
 from app.services.ai_gateway import ProviderAPIError
 from app.services.anthropic_provider import AnthropicProvider
+from app.services.billing import BillingService
 from app.services.privacy import DataPrivacyShield
 
 logger = logging.getLogger(__name__)
@@ -56,7 +57,7 @@ class GenerateResponse(BaseModel):
     class Config:
         json_schema_extra = {
             "example": {
-                "content": "Dear Colleague,\n\nI hope this message...",
+                "content": "Dear Colleague,\\n\\nI hope this message...",
                 "tokens_used": 127,
                 "credits_deducted": 127,
                 "pii_detected": False,
@@ -76,7 +77,7 @@ async def generate_content(
     1. Validates license key from X-License-Key header
     2. Sanitizes the prompt for PII (emails, phones, IBANs)
     3. Generates AI response using Anthropic Claude
-    4. Calculates tokens and credits
+    4. Deducts credits atomically from license
     5. Returns formatted response
 
     Args:
@@ -117,21 +118,37 @@ async def generate_content(
             ) from e
 
         # Step 3: Calculate credits (1:1 with tokens for MVP)
-        credits = tokens
+        credits_to_deduct = tokens
 
-        # Note: Actual credit deduction will be in BILLING-001
+        # Step 4: Deduct credits atomically
+        try:
+            await BillingService.deduct_credits(
+                license.license_key,
+                credits_to_deduct
+            )
+            logger.info(
+                f"Billing successful: {credits_to_deduct} credits deducted "
+                f"for tenant {license.tenant_id}"
+            )
+        except HTTPException as billing_error:
+            # Re-raise billing errors (402, 403, 500)
+            logger.error(
+                f"Billing failed for tenant {license.tenant_id}: "
+                f"{billing_error.detail}"
+            )
+            raise
 
-        # Step 4: Return response
+        # Step 5: Return successful response
         logger.info(
             f"Generated response: {tokens} tokens, "
-            f"{credits} credits, PII detected: {pii_found} "
+            f"{credits_to_deduct} credits deducted, PII detected: {pii_found} "
             f"(tenant: {license.tenant_id})"
         )
 
         return GenerateResponse(
             content=content,
             tokens_used=tokens,
-            credits_deducted=credits,
+            credits_deducted=credits_to_deduct,
             pii_detected=pii_found,
         )
 

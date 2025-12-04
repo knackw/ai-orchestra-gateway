@@ -100,7 +100,7 @@ This document tracks the implementation tasks for the **AI Legal Ops** multi-ten
   - Implement `sanitize(text: str) -> tuple[str, bool]` method
   - Replace PII with placeholders (`<EMAIL_REMOVED>`)
   
-- [ ] **PRIVACY-002**: Add Logging Filter
+- [x] **PRIVACY-002**: Add Logging Filter
   - Create custom logging filter class
   - Apply `DataPrivacyShield.sanitize()` to all log messages
   - Configure in `app/main.py`
@@ -136,7 +136,7 @@ This document tracks the implementation tasks for the **AI Legal Ops** multi-ten
   - Return boolean (success/failure)
   - Test race conditions with concurrent requests
   
-- [ ] **BILLING-001**: Implement Billing Service
+- [x] **BILLING-001**: Implement Billing Service
   - Create `app/services/billing.py`
   - Python wrapper for `deduct_credits` RPC
   - Handle insufficient balance errors

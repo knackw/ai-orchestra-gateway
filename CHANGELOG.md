@@ -1,3 +1,40 @@
+## [0.1.8] - 2025-12-04
+
+### Added
+- **Billing:** Atomic credit deduction using Supabase RPC function
+- **Database:** Migration `002_create_billing_functions.sql` with `deduct_credits` RPC
+- **Backend:** `BillingService` class for credit management (100% test coverage)
+- **Testing:** 6 billing unit tests + updated 12 generate endpoint tests
+
+### Changed
+- **API:** `/v1/generate` endpoint now deducts credits atomically after successful generation
+- **Flow:** Credits deducted AFTER AI generation (user-friendly: pay on success only)
+
+### Security
+- Atomic transactions prevent race conditions in billing
+- Row-level locking (`FOR UPDATE`) ensures data consistency
+
+# Changelog
+
+All notable changes to this project will be documented in this file.
+
+The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
+and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
+
+## [0.1.7] - 2025-12-04
+
+### Added
+- **Privacy:** Global `PrivacyLogFilter` to automatically sanitize PII from all log messages
+- **Core:** Logging configuration in `app/main.py` with privacy filter applied to root logger
+- **Testing:** 8 unit tests for logging filter (100% coverage)
+
+### Changed
+- **Logging:** All application logs now automatically sanitized before output
+
+## [0.1.6] - 2025-12-03
+
+### Added
+- Implemented API key validation middleware via FastAPI dependency injection
 - Created SQL migration for licenses and tenants tables with demo data
 - Added 12 comprehensive security tests (100% coverage on security.py)
 
@@ -65,22 +102,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Created 35 comprehensive tests with 93% coverage
 
 ### Technical
-- Email pattern: Comprehensive regex matching 99% of valid emails
-- Phone pattern: German formats (+49, 0049, 0xxx with flexible separators)
-- IBAN pattern: German IBAN (DE + 20 digits)
-- Processing order: Email → IBAN → Phone (avoids pattern conflicts)
-- Fail-open error handling (returns original text on exception)
-
-## [0.1.3] - 2025-12-02
-
-### Added
-- Implemented Anthropic provider for Claude API integration
-- Created `AnthropicProvider` class implementing `AIProvider` interface
-- Integrated with Claude 3.5 Sonnet via httpx async client
-- Added x-api-key authentication for Anthropic API
-- Comprehensive request/response handling
-- Token counting from API usage data (input + output tokens)
-- Robust error handling (401, 429, 500, network errors)
 - Created 18 comprehensive tests with 97% coverage
 
 ### Technical
