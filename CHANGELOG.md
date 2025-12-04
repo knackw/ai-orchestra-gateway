@@ -1,10 +1,3 @@
-## [0.1.6] - 2025-12-03
-
-### Added
-- Implemented API key validation middleware via FastAPI dependency injection
-- Created app/core/security.py with LicenseInfo class and get_current_license dependency
-- Added validate_license_key function to query Supabase licenses table
-- Check license active status, expiration date, and remaining credits
 - Created SQL migration for licenses and tenants tables with demo data
 - Added 12 comprehensive security tests (100% coverage on security.py)
 

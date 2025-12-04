@@ -329,3 +329,261 @@ class TestHasPIIMethod:
     def test_has_pii_none(self):
         """Test has_pii with None."""
         assert DataPrivacyShield.has_pii(None) is False
+
+
+class TestEmailEdgeCases:
+    """Extended tests for email edge cases."""
+
+    def test_email_with_underscore(self):
+        """Test email with underscore in username."""
+        text = "Contact user_name@domain.com"
+        sanitized, found = DataPrivacyShield.sanitize(text)
+
+        assert found is True
+        assert "user_name@domain.com" not in sanitized
+        assert "<EMAIL_REMOVED>" in sanitized
+
+    def test_email_with_hyphen(self):
+        """Test email with hyphen in username."""
+        text = "Email: first-last@company.org"
+        sanitized, found = DataPrivacyShield.sanitize(text)
+
+        assert found is True
+        assert "first-last@company.org" not in sanitized
+        assert "<EMAIL_REMOVED>" in sanitized
+
+    def test_email_with_percentage(self):
+        """Test email with percentage sign (rare but valid)."""
+        text = "Send to user%tag@domain.com"
+        sanitized, found = DataPrivacyShield.sanitize(text)
+
+        assert found is True
+        assert "user%tag@domain.com" not in sanitized
+        assert "<EMAIL_REMOVED>" in sanitized
+
+    def test_very_long_email(self):
+        """Test very long email address."""
+        text = "Contact verylongusername@subdomain.example.domain.com"
+        sanitized, found = DataPrivacyShield.sanitize(text)
+
+        assert found is True
+        assert "verylongusername@subdomain.example.domain.com" not in sanitized
+        assert "<EMAIL_REMOVED>" in sanitized
+
+    def test_minimum_valid_email(self):
+        """Test minimum valid email format."""
+        text = "Email a@b.co"
+        sanitized, found = DataPrivacyShield.sanitize(text)
+
+        assert found is True
+        assert "a@b.co" not in sanitized
+        assert "<EMAIL_REMOVED>" in sanitized
+
+    def test_email_case_sensitivity(self):
+        """Test email detection is case-insensitive."""
+        text = "User@Example.COM and TEST@domain.ORG"
+        sanitized, found = DataPrivacyShield.sanitize(text)
+
+        assert found is True
+        assert "User@Example.COM" not in sanitized
+        assert "TEST@domain.ORG" not in sanitized
+        assert sanitized.count("<EMAIL_REMOVED>") == 2
+
+
+class TestGermanMobileNumbers:
+    """Extended tests for German mobile phone numbers."""
+
+    def test_vodafone_mobile(self):
+        """Test Vodafone mobile number (0172)."""
+        text = "Call 0172 1234567"
+        sanitized, found = DataPrivacyShield.sanitize(text)
+
+        assert found is True
+        assert "0172 1234567" not in sanitized
+        assert "<PHONE_REMOVED>" in sanitized
+
+    def test_telekom_mobile(self):
+        """Test T-Mobile number (0151)."""
+        text = "Mobile: 0151 12345678"
+        sanitized, found = DataPrivacyShield.sanitize(text)
+
+        assert found is True
+        assert "0151 12345678" not in sanitized
+        assert "<PHONE_REMOVED>" in sanitized
+
+    def test_o2_mobile(self):
+        """Test O2 mobile number (0176)."""
+        text = "Reach me at 0176 123456789"
+        sanitized, found = DataPrivacyShield.sanitize(text)
+
+        assert found is True
+        assert "0176 123456789" not in sanitized
+        assert "<PHONE_REMOVED>" in sanitized
+
+    def test_mobile_with_plus49(self):
+        """Test mobile with +49 international prefix."""
+        text = "WhatsApp: +49 151 12345678"
+        sanitized, found = DataPrivacyShield.sanitize(text)
+
+        assert found is True
+        assert "+49 151 12345678" not in sanitized
+        assert "<PHONE_REMOVED>" in sanitized
+
+    def test_berlin_landline(self):
+        """Test Berlin landline (030)."""
+        text = "Office: 030 12345678"
+        sanitized, found = DataPrivacyShield.sanitize(text)
+
+        assert found is True
+        assert "030 12345678" not in sanitized
+        assert "<PHONE_REMOVED>" in sanitized
+
+    def test_munich_landline(self):
+        """Test Munich landline (089)."""
+        text = "Call 089 123456789"
+        sanitized, found = DataPrivacyShield.sanitize(text)
+
+        assert found is True
+        assert "089 123456789" not in sanitized
+        assert "<PHONE_REMOVED>" in sanitized
+
+    def test_very_long_number(self):
+        """Test very long phone number."""
+        text = "Number: 0123 123456789012"
+        sanitized, found = DataPrivacyShield.sanitize(text)
+
+        assert found is True
+        assert "0123 123456789012" not in sanitized
+        assert "<PHONE_REMOVED>" in sanitized
+
+
+class TestIBANEdgeCases:
+    """Extended tests for IBAN edge cases."""
+
+    def test_iban_without_word_boundary(self):
+        """Test IBAN detection with word boundaries (correct regex behavior)."""
+        # The \b word boundary in the IBAN pattern is intentional -
+        # it prevents matching partial strings like "textDE12345678901234567890text"
+        text = "IBAN DE12345678901234567890 found"
+        sanitized, found = DataPrivacyShield.sanitize(text)
+
+        assert found is True
+        assert "DE12345678901234567890" not in sanitized
+        assert "<IBAN_REMOVED>" in sanitized
+
+    def test_multiple_ibans_complex_text(self):
+        """Test multiple IBANs in complex sentence."""
+        text = (
+            "Transfer from DE11111111111111111111 "
+            "(Account A) to DE22222222222222222222 "
+            "(Account B) and CC DE33333333333333333333."
+        )
+        sanitized, found = DataPrivacyShield.sanitize(text)
+
+        assert found is True
+        assert "DE11111111111111111111" not in sanitized
+        assert "DE22222222222222222222" not in sanitized
+        assert "DE33333333333333333333" not in sanitized
+        assert sanitized.count("<IBAN_REMOVED>") == 3
+
+
+class TestUnicodeAndPerformance:
+    """Tests for Unicode support and performance."""
+
+    def test_unicode_with_email(self):
+        """Test Unicode text with ASCII email (Umlauts in domain not RFC-compliant)."""
+        text = "Kontaktieren Sie uns: mueller@firma.de für Details"
+        sanitized, found = DataPrivacyShield.sanitize(text)
+
+        assert found is True
+        assert "mueller@firma.de" not in sanitized
+        assert "<EMAIL_REMOVED>" in sanitized
+        assert "Kontaktieren" in sanitized
+        assert "für" in sanitized
+
+    def test_unicode_with_phone(self):
+        """Test Unicode text with phone number."""
+        text = "Rufen Sie an: +49 123 456789 für Öffnungszeiten"
+        sanitized, found = DataPrivacyShield.sanitize(text)
+
+        assert found is True
+        assert "+49 123 456789" not in sanitized
+        assert "<PHONE_REMOVED>" in sanitized
+        assert "Öffnungszeiten" in sanitized
+
+    def test_very_long_text_with_pii(self):
+        """Test performance with very long text containing PII."""
+        long_text = "Lorem ipsum " * 100 + "user@example.com " + "dolor sit " * 100
+        sanitized, found = DataPrivacyShield.sanitize(long_text)
+
+        assert found is True
+        assert "user@example.com" not in sanitized
+        assert "<EMAIL_REMOVED>" in sanitized
+        # Verify text length is preserved approximately
+        assert len(sanitized) > 1000
+
+    def test_multiple_pii_in_long_text(self):
+        """Test multiple PII instances in long text."""
+        text = (
+            "Contact details: email1@test.com or email2@test.com. "
+            "Phone numbers: +49 111 111111, 0222 222222, +49 333 333333. "
+            "IBANs: DE11111111111111111111, DE22222222222222222222. "
+        ) * 5  # Repeat 5 times for performance test
+
+        sanitized, found = DataPrivacyShield.sanitize(text)
+
+        assert found is True
+        assert "email1@test.com" not in sanitized
+        assert "email2@test.com" not in sanitized
+        assert "+49 111 111111" not in sanitized
+        assert "DE11111111111111111111" not in sanitized
+        # Each repetition has 2 emails, 3 phones, 2 IBANs
+        assert sanitized.count("<EMAIL_REMOVED>") == 10
+        assert sanitized.count("<PHONE_REMOVED>") == 15
+        assert sanitized.count("<IBAN_REMOVED>") == 10
+
+
+class TestExceptionHandling:
+    """Tests for error handling and edge cases that could cause exceptions."""
+
+    def test_special_regex_characters_in_text(self):
+        """Test text with regex special characters around valid emails."""
+        text = "Contact: [test@example.com] or (user@domain.com)"
+        sanitized, found = DataPrivacyShield.sanitize(text)
+
+        assert found is True
+        # Valid emails should be detected even when surrounded by special chars
+        assert "test@example.com" not in sanitized
+        assert "user@domain.com" not in sanitized
+
+    def test_backslash_in_text(self):
+        """Test text with backslashes."""
+        text = r"Path: C:\Users\test@example.com\Documents"
+        sanitized, found = DataPrivacyShield.sanitize(text)
+
+        assert found is True
+        assert "test@example.com" not in sanitized
+
+    def test_newlines_with_pii(self):
+        """Test multiline text with PII."""
+        text = "Line 1: user@example.com\nLine 2: +49 123 456789\nLine 3: DE12345678901234567890"
+        sanitized, found = DataPrivacyShield.sanitize(text)
+
+        assert found is True
+        assert "user@example.com" not in sanitized
+        assert "+49 123 456789" not in sanitized
+        assert "DE12345678901234567890" not in sanitized
+        # Verify newlines are preserved
+        assert sanitized.count("\n") == 2
+
+    def test_tabs_with_pii(self):
+        """Test text with tabs."""
+        text = "Email:\tuser@test.com\tPhone:\t+49 123 456789"
+        sanitized, found = DataPrivacyShield.sanitize(text)
+
+        assert found is True
+        assert "user@test.com" not in sanitized
+        assert "+49 123 456789" not in sanitized
+        # Verify tabs are preserved
+        assert "\t" in sanitized
+
