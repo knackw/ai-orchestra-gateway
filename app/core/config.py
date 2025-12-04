@@ -12,6 +12,7 @@ class Settings(BaseSettings):
     
     # AI Providers
     ANTHROPIC_API_KEY: str
+    SCALEWAY_API_KEY: str = ""
     
     model_config = SettingsConfigDict(
         env_file=".env", env_ignore_empty=True, extra="ignore"

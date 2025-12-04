@@ -1,3 +1,15 @@
+## [0.1.9] - 2025-12-04
+
+### Added
+- **AI Provider:** Scaleway AI support with 7 LLM models (Llama 3.1, Mistral, Qwen, Deepseek)
+- **API:** `provider` parameter to `/v1/generate` endpoint ("anthropic" default, "scaleway" optional)
+- **Config:** `SCALEWAY_API_KEY` setting (optional)
+- **Testing:** 10 Scaleway provider tests + 3 provider selection tests (100% coverage)
+
+### Changed
+- **Endpoint:** `/v1/generate` now supports dynamic provider selection
+- **Architecture:** Multi-provider support via runtime selection
+
 ## [0.1.8] - 2025-12-04
 
 ### Added

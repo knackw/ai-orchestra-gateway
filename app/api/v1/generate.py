@@ -18,6 +18,7 @@ from app.services.ai_gateway import ProviderAPIError
 from app.services.anthropic_provider import AnthropicProvider
 from app.services.billing import BillingService
 from app.services.privacy import DataPrivacyShield
+from app.services.scaleway_provider import ScalewayProvider
 
 logger = logging.getLogger(__name__)
 
@@ -34,10 +35,16 @@ class GenerateRequest(BaseModel):
         description="User prompt for AI generation",
     )
 
+    provider: str = Field(
+        default="anthropic",
+        description="AI provider to use ('anthropic' or 'scaleway')",
+    )
+
     class Config:
         json_schema_extra = {
             "example": {
                 "prompt": "Write a professional email to my colleague",
+                "provider": "anthropic",
             }
         }
 
@@ -106,7 +113,21 @@ async def generate_content(
 
         # Step 2: Generate AI response
         # License already validated by dependency
-        provider = AnthropicProvider()
+        
+        # Validate and select provider
+        if request.provider not in ["anthropic", "scaleway"]:
+            raise HTTPException(
+                status_code=400,
+                detail=f"Invalid provider '{request.provider}'. Must be 'anthropic' or 'scaleway'"
+            )
+        
+        # Instantiate provider
+        if request.provider == "anthropic":
+            provider = AnthropicProvider()
+        else:  # scaleway
+            provider = ScalewayProvider()
+        
+        logger.info(f"Using provider: {request.provider}")
 
         try:
             content, tokens = await provider.generate(sanitized_prompt)

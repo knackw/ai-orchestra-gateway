@@ -75,7 +75,7 @@ This document tracks the implementation tasks for the **AI Legal Ops** multi-ten
   - Handle authentication (Bearer token)
   - Parse response and extract token usage
   
-- [ ] **AI-003**: Implement Scaleway Adapter (Optional)
+- [x] **AI-003**: Implement Scaleway Adapter (Optional)
   - Create `ScalewayProvider` class
   - Follow same interface as Anthropic
   - Add as secondary provider
