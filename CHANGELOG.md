@@ -1,3 +1,30 @@
+## [0.2.1] - 2025-12-05
+
+### Fixed
+- **Database:** Added `is_active` column to `tenants` table in migration `001_create_licenses_table.sql`
+- **Code Quality:** Migrated Pydantic models to V2 API (`ConfigDict` instead of `Config`, `model_dump()` instead of `dict()`)
+- **Admin API:** Fixed schema inconsistency between database and API models
+
+### Changed
+- **Pydantic:** Updated `app/api/admin/tenants.py` and `app/api/admin/licenses.py` to use Pydantic V2 API
+
+### Technical
+- Resolved all Pydantic deprecation warnings
+- Ensured all 17 admin tests pass cleanly
+- Database schema now matches API expectations
+
+## [0.2.0] - 2025-12-05
+
+### Added
+- **Admin API:** New endpoints for tenant and license management (`/admin/tenants`, `/admin/licenses`)
+- **Security:** Admin authentication via `X-Admin-Key` header
+- **Billing:** Secure license key generation (`lic_` + 32 chars)
+- **Config:** `ADMIN_API_KEY` setting
+- **Testing:** 18 new tests for admin endpoints (CRUD, auth, validation)
+
+### Changed
+- **Architecture:** Added admin module structure
+
 ## [0.1.9] - 2025-12-04
 
 ### Added

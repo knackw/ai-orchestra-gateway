@@ -14,6 +14,9 @@ class Settings(BaseSettings):
     ANTHROPIC_API_KEY: str
     SCALEWAY_API_KEY: str = ""
     
+    # Admin API
+    ADMIN_API_KEY: str = ""  # Optional for tests
+    
     model_config = SettingsConfigDict(
         env_file=".env", env_ignore_empty=True, extra="ignore"
     )

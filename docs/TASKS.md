@@ -142,7 +142,7 @@ This document tracks the implementation tasks for the **AI Legal Ops** multi-ten
   - Handle insufficient balance errors
   - Add retry logic for network failures
   
-- [ ] **BILLING-002**: Setup Tenant & API Key Management
+- [x] **BILLING-002**: Setup Tenant & API Key Management
   - Create `/admin/tenants` CRUD endpoints (internal use only)
   - Create `/admin/licenses` CRUD endpoints
   - Generate secure API keys (UUID-based)
@@ -161,20 +161,6 @@ This document tracks the implementation tasks for the **AI Legal Ops** multi-ten
   - Query for analytics
 
 ### 2.2 Admin Dashboard
-
-- [ ] **ADMIN-001**: Setup Admin UI Project
-  - Choose framework: Next.js (App Router) or Streamlit (Python)
-  - Initialize project in `admin/` directory
-  - Configure Supabase client for authentication
-  
-- [ ] **ADMIN-002**: Implement Tenant Management
-  - Create tenants list view (table)
-  - Add create tenant form
-  - Add edit/deactivate tenant actions
-  - Display tenant statistics (total credits used)
-  
-- [ ] **ADMIN-003**: Implement License Management
-  - Create licenses list view (filterable by tenant)
   - Add create license form (select tenant, set plan, initial credits)
   - Add deactivate license action
   - Display license usage history

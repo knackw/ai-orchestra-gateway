@@ -21,7 +21,7 @@ APP_START_TIME = datetime.now(timezone.utc)
 app = FastAPI(
     title="AI Legal Ops Gateway",
     description="Multi-tenant middleware for AI orchestration with privacy enforcement",
-    version="0.1.9",
+    version="0.2.1",
 )
 
 # Initialize health checker
@@ -29,6 +29,11 @@ health_checker = HealthChecker(start_time=APP_START_TIME)
 
 # Include API routers
 app.include_router(generate.router, prefix="/v1", tags=["AI Generation"])
+
+# Include admin routers
+from app.api.admin import tenants, licenses
+app.include_router(tenants.router, prefix="/admin", tags=["Admin - Tenants"])
+app.include_router(licenses.router, prefix="/admin", tags=["Admin - Licenses"])
 
 
 @app.get("/")
