@@ -1,3 +1,24 @@
+## [0.3.0] - 2025-12-05
+
+### Added
+- **Database:** `apps` table for multi-app support per tenant (3-tier architecture: tenant → app → license)
+- **Database:** `usage_logs` table for immutable audit trail of AI API calls
+- **Schema:** Modified `licenses` table to include `app_id` foreign key
+- **Migration:** `003_create_apps_and_usage_logs.sql` with demo data
+- **Testing:** Comprehensive schema tests in `test_db_schema.py` (apps, usage_logs, cascades, immutability)
+- **Security:** RLS policies on `usage_logs` prevent UPDATE/DELETE operations
+
+### Changed
+- **Architecture:** Migrated from 2-tier (tenant → license) to 3-tier (tenant → app → license)
+- **Demo Data:** Existing licenses migrated to new demo app structure
+- **Indexes:** Added performance indexes for apps, licenses (by app), and usage_logs analytics
+
+### Technical
+- CORS whitelist support via `apps.allowed_origins` array
+- Denormalized foreign keys in `usage_logs` for fast analytics
+- CASCADE DELETE through entire hierarchy (tenant → app → license → usage_logs)
+- 10 demo usage log entries for testing analytics queries
+
 ## [0.2.1] - 2025-12-05
 
 ### Fixed

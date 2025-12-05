@@ -119,7 +119,7 @@ This document tracks the implementation tasks for the **AI Legal Ops** multi-ten
 
 ### 2.1 Database Schema & Billing
 
-- [ ] **DB-001**: Create Database Schema
+- [x] **DB-001**: Create Database Schema
   - Write SQL migration for `tenants`, `apps`, `licenses`, `usage_logs` tables
   - Apply to local Supabase via `supabase db push`
   - Apply to production Supabase
