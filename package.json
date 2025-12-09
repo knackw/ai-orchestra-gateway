@@ -1,26 +1,58 @@
 {
   "name": "ai-orchestra-gateway",
-  "version": "2.0.4",
+  "version": "0.8.0",
   "description": "Enterprise-grade, multi-tenant middleware platform for secure AI orchestration with GDPR-compliant privacy enforcement",
   "main": "index.js",
   "type": "module",
   "scripts": {
+    "========== DEVELOPMENT ==========": "",
+    "dev": "npm run kill-ports && npm-run-all --parallel dev:backend dev:frontend",
+    "dev:backend": "cd /root/Projekte/ai-orchestra-gateway && python -m uvicorn app.main:app --reload --host 0.0.0.0 --port 8000",
+    "dev:frontend": "cd frontend && npm run dev",
+    "dev:setup": "npm run supabase:start && echo 'Supabase is running. Now start with: npm run dev'",
+    "========== BACKEND ONLY ==========": "",
+    "backend": "python -m uvicorn app.main:app --reload --host 0.0.0.0 --port 8000",
+    "backend:prod": "python -m uvicorn app.main:app --host 0.0.0.0 --port 8000 --workers 4",
+    "========== FRONTEND ONLY ==========": "",
+    "frontend": "cd frontend && npm run dev",
+    "frontend:build": "cd frontend && npm run build",
+    "frontend:start": "cd frontend && npm run start",
+    "========== TESTING ==========": "",
+    "test": "TESTING=true pytest app/tests/ -v",
+    "test:backend": "TESTING=true pytest app/tests/ -v --tb=short",
+    "test:coverage": "TESTING=true pytest app/tests/ --cov=app --cov-report=term-missing --cov-report=html",
+    "test:frontend": "cd frontend && npm run test:run",
+    "test:e2e": "cd frontend && npm run e2e",
+    "test:all": "npm run test:backend && npm run test:frontend",
+    "========== LINTING ==========": "",
+    "lint": "ruff check app/",
+    "lint:fix": "ruff check app/ --fix",
+    "lint:frontend": "cd frontend && npm run lint",
+    "========== DATABASE / SUPABASE ==========": "",
     "supabase:start": "npx supabase start",
     "supabase:stop": "npx supabase stop",
     "supabase:status": "npx supabase status",
     "supabase:reset": "npx supabase db reset",
     "supabase:migrations": "npx supabase migration list",
     "supabase:init": "npx supabase init",
-    "dev:setup": "npm run supabase:start && echo 'Supabase is running. Now start Python backend with: source venv/bin/activate && uvicorn app.main:app --reload'",
-    "lint": "ruff check .",
-    "test": "pytest tests/ --cov=app --cov-report=term-missing",
-    "test:integration": "pytest tests/integration/ -v",
-    "test:watch": "pytest-watch",
+    "db:migrate": "python scripts/run_migration_direct.py",
+    "========== DOCKER ==========": "",
     "docker:build": "docker-compose build",
     "docker:up": "docker-compose up -d",
     "docker:down": "docker-compose down",
     "docker:logs": "docker-compose logs -f",
-    "health": "curl http://localhost:8000/health"
+    "docker:restart": "docker-compose down && docker-compose up -d",
+    "========== UTILITIES ==========": "",
+    "health": "curl -s http://localhost:8000/health | python -m json.tool",
+    "kill-ports": "lsof -ti:3000,3001,8000,8080,9000 | xargs -r kill -9 2>/dev/null || true",
+    "kill-port:3000": "lsof -ti:3000 | xargs -r kill -9 || true",
+    "kill-port:8000": "lsof -ti:8000 | xargs -r kill -9 || true",
+    "clean": "find . -type d -name __pycache__ -exec rm -rf {} + 2>/dev/null || true",
+    "clean:all": "npm run clean && rm -rf .pytest_cache .coverage htmlcov frontend/.next",
+    "========== INSTALLATION ==========": "",
+    "setup": "pip install -r requirements.txt && cd frontend && npm install",
+    "setup:backend": "pip install -r requirements.txt",
+    "setup:frontend": "cd frontend && npm install"
   },
   "repository": {
     "type": "git",
@@ -37,10 +69,14 @@
     "fastapi",
     "anthropic",
     "claude",
+    "vertex-ai",
+    "scaleway",
     "saas",
     "proxy",
     "billing",
-    "pii-shield"
+    "pii-shield",
+    "nextjs",
+    "typescript"
   ],
   "author": "AI Legal Ops Team",
   "license": "UNLICENSED",
@@ -54,34 +90,44 @@
     "npm": ">=9.0.0"
   },
   "devDependencies": {
+    "npm-run-all": "^4.1.5",
     "supabase": "^1.226.4"
   },
+  "dependencies": {
+    "autoprefixer": "^10.4.22",
+    "sonner": "^2.0.7"
+  },
   "config": {
-    "pythonVersion": "3.11",
-    "framework": "FastAPI",
+    "pythonVersion": "3.11+",
+    "framework": "FastAPI + Next.js 15",
     "database": "Supabase (PostgreSQL 15+)",
     "deployment": "Docker Compose",
     "region": "EU (Frankfurt)"
   },
   "projectInfo": {
-    "status": "Planning Phase",
-    "phase": "Phase 1 (MVP Core)",
+    "status": "v0.8.0 - Phase 6 Complete",
+    "phase": "Production Ready",
     "targetLaunch": "Q1 2026",
     "compliance": [
       "GDPR/DSGVO",
       "EU Data Residency",
       "PII Redaction",
-      "Audit Trail"
+      "Audit Trail",
+      "BITV 2.0",
+      "WCAG 2.1"
     ],
     "coreServices": [
       "AI Gateway Service",
       "Privacy Shield Service",
       "Billing Service",
-      "Admin Dashboard"
+      "Admin Dashboard",
+      "Next.js Frontend"
     ],
     "aiProviders": [
-      "Anthropic Claude",
-      "Scaleway"
+      "Anthropic Claude (Direct)",
+      "Vertex AI Claude (EU)",
+      "Vertex AI Gemini (EU)",
+      "Scaleway (EU)"
     ]
   }
 }

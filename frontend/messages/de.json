@@ -1,0 +1,358 @@
+{
+  "common": {
+    "login": "Anmelden",
+    "signup": "Registrieren",
+    "logout": "Abmelden",
+    "save": "Speichern",
+    "cancel": "Abbrechen",
+    "delete": "Löschen",
+    "edit": "Bearbeiten",
+    "create": "Erstellen",
+    "search": "Suchen",
+    "filter": "Filtern",
+    "export": "Exportieren",
+    "loading": "Wird geladen...",
+    "error": "Fehler",
+    "success": "Erfolgreich",
+    "warning": "Warnung",
+    "info": "Information",
+    "back": "Zurück",
+    "next": "Weiter",
+    "previous": "Zurück",
+    "confirm": "Bestätigen",
+    "close": "Schließen",
+    "yes": "Ja",
+    "no": "Nein",
+    "submit": "Absenden",
+    "apply": "Anwenden",
+    "reset": "Zurücksetzen"
+  },
+  "navigation": {
+    "home": "Startseite",
+    "dashboard": "Dashboard",
+    "apiKeys": "API-Schlüssel",
+    "usage": "Nutzung",
+    "billing": "Abrechnung",
+    "settings": "Einstellungen",
+    "admin": "Administration",
+    "features": "Funktionen",
+    "pricing": "Preise",
+    "docs": "Dokumentation",
+    "blog": "Blog",
+    "apps": "Anwendungen",
+    "analytics": "Analytik",
+    "auditLogs": "Audit-Protokolle",
+    "tenants": "Mandanten",
+    "licenses": "Lizenzen",
+    "users": "Benutzer"
+  },
+  "landing": {
+    "hero": {
+      "title": "KI-Power für Ihr Business",
+      "subtitle": "DSGVO-konform",
+      "description": "Multi-Provider AI Gateway mit integriertem Privacy Shield. Automatische PII-Erkennung und Anonymisierung. 100% DSGVO-konform mit Datenresidenz in der EU.",
+      "cta": "Kostenlos starten",
+      "demo": "Demo anfragen",
+      "cta_primary": "Kostenlos starten",
+      "cta_secondary": "Live Demo"
+    },
+    "features": {
+      "title": "Funktionen",
+      "subtitle": "Warum AI Legal Ops?",
+      "privacyShield": {
+        "title": "Privacy Shield",
+        "description": "Automatische PII-Erkennung und Anonymisierung"
+      },
+      "multiProvider": {
+        "title": "Multi-Provider",
+        "description": "Anthropic, Scaleway, Google Vertex AI"
+      },
+      "euHosting": {
+        "title": "EU-Hosting",
+        "description": "100% DSGVO-konform mit Datenresidenz in der EU"
+      },
+      "pii_shield": {
+        "title": "PII Shield",
+        "description": "Automatische Erkennung & Redaktion personenbezogener Daten"
+      },
+      "multi_tenant": {
+        "title": "Multi-Tenant",
+        "description": "Isolierte Mandanten mit eigenen Credits und API-Keys"
+      },
+      "pay_per_use": {
+        "title": "Pay-per-Use",
+        "description": "Flexible Credit-basierte Abrechnung ohne Grundgebühr"
+      },
+      "failover": {
+        "title": "Provider Failover",
+        "description": "Automatischer Wechsel bei Provider-Ausfall"
+      },
+      "analytics": {
+        "title": "Usage Analytics",
+        "description": "Detaillierte Nutzungsstatistiken in Echtzeit"
+      },
+      "gdpr": {
+        "title": "DSGVO-konform",
+        "description": "EU Data Residency, deutsche Server"
+      }
+    },
+    "pricing": {
+      "title": "Preise",
+      "subtitle": "Einfache, transparente Preise",
+      "starter": "Starter",
+      "professional": "Professional",
+      "enterprise": "Enterprise",
+      "perMonth": "/ Monat",
+      "tokens": "Tokens",
+      "selectPlan": "Plan wählen",
+      "monthly": "Monatlich",
+      "yearly": "Jährlich",
+      "save": "Spare 20%",
+      "starterPlan": {
+        "name": "Starter",
+        "price": "0",
+        "description": "Für den Einstieg",
+        "cta": "Kostenlos starten"
+      },
+      "professionalPlan": {
+        "name": "Professional",
+        "price": "49",
+        "description": "Für wachsende Teams",
+        "cta": "Jetzt upgraden",
+        "badge": "Empfohlen"
+      },
+      "enterprisePlan": {
+        "name": "Enterprise",
+        "price": "Auf Anfrage",
+        "description": "Für große Unternehmen",
+        "cta": "Kontakt aufnehmen"
+      }
+    },
+    "faq": {
+      "title": "Häufig gestellte Fragen"
+    },
+    "cta": {
+      "title": "Bereit für sichere KI-Integration?",
+      "subtitle": "Starten Sie in weniger als 5 Minuten. Keine Kreditkarte erforderlich.",
+      "button": "Kostenlos starten"
+    }
+  },
+  "auth": {
+    "login": {
+      "title": "Anmelden",
+      "subtitle": "Willkommen zurück",
+      "description": "Melden Sie sich an, um fortzufahren",
+      "email": "E-Mail-Adresse",
+      "password": "Passwort",
+      "forgotPassword": "Passwort vergessen?",
+      "noAccount": "Noch kein Konto?",
+      "signupLink": "Jetzt registrieren",
+      "remember": "Angemeldet bleiben",
+      "forgot": "Passwort vergessen?",
+      "submit": "Anmelden",
+      "no_account": "Noch kein Konto?",
+      "signup_link": "Jetzt registrieren"
+    },
+    "signup": {
+      "title": "Registrieren",
+      "subtitle": "Konto erstellen",
+      "description": "Starten Sie kostenlos",
+      "company": "Unternehmen (optional)",
+      "name": "Vollständiger Name",
+      "email": "E-Mail-Adresse",
+      "password": "Passwort",
+      "confirmPassword": "Passwort bestätigen",
+      "confirm_password": "Passwort bestätigen",
+      "acceptTerms": "Ich akzeptiere die AGB",
+      "acceptPrivacy": "Ich akzeptiere die Datenschutzerklärung",
+      "accept_terms": "Ich akzeptiere die AGB und Datenschutzerklärung",
+      "hasAccount": "Bereits ein Konto?",
+      "loginLink": "Jetzt anmelden",
+      "submit": "Registrieren",
+      "has_account": "Bereits registriert?",
+      "login_link": "Jetzt anmelden"
+    },
+    "resetPassword": {
+      "title": "Passwort zurücksetzen",
+      "description": "Geben Sie Ihre E-Mail-Adresse ein",
+      "submit": "Link senden",
+      "success": "E-Mail wurde gesendet"
+    },
+    "forgot_password": {
+      "title": "Passwort vergessen?",
+      "subtitle": "Geben Sie Ihre E-Mail ein, um einen Reset-Link zu erhalten",
+      "submit": "Reset-Link senden",
+      "back": "Zurück zur Anmeldung",
+      "success": "Reset-Link wurde gesendet"
+    },
+    "reset_password": {
+      "title": "Neues Passwort setzen",
+      "password": "Neues Passwort",
+      "confirm": "Passwort bestätigen",
+      "submit": "Passwort ändern"
+    },
+    "verify_email": {
+      "title": "E-Mail bestätigen",
+      "message": "Wir haben Ihnen eine Bestätigungs-E-Mail gesendet.",
+      "resend": "E-Mail erneut senden",
+      "resent": "E-Mail wurde erneut gesendet"
+    }
+  },
+  "dashboard": {
+    "title": "Dashboard",
+    "welcome": "Willkommen zurück",
+    "overview": "Übersicht",
+    "api_keys": "API Keys",
+    "usage": "Nutzung",
+    "billing": "Abrechnung",
+    "settings": "Einstellungen",
+    "credits": {
+      "title": "Guthaben",
+      "remaining": "Verbleibend",
+      "used": "Verbraucht",
+      "top_up": "Aufladen"
+    },
+    "stats": {
+      "requests": "Anfragen",
+      "requestsToday": "Anfragen heute",
+      "tokens": "Tokens",
+      "tokensThisMonth": "Tokens diesen Monat",
+      "errors": "Fehler"
+    },
+    "apiKeys": "Aktive API-Schlüssel"
+  },
+  "admin": {
+    "title": "Administration",
+    "tenants": "Mandanten",
+    "licenses": "Lizenzen",
+    "users": "Benutzer",
+    "audit_logs": "Audit Logs",
+    "auditLogs": "Audit-Protokolle",
+    "analytics": "Analytik",
+    "billing": "Abrechnung",
+    "settings": "Einstellungen",
+    "apps": "Anwendungen"
+  },
+  "errors": {
+    "required": "Dieses Feld ist erforderlich",
+    "invalidEmail": "Ungültige E-Mail-Adresse",
+    "passwordMin": "Mindestens {min} Zeichen",
+    "passwordMatch": "Passwörter stimmen nicht überein",
+    "generic": "Ein Fehler ist aufgetreten",
+    "not_found": "Nicht gefunden",
+    "unauthorized": "Nicht autorisiert",
+    "forbidden": "Zugriff verweigert",
+    "validation": "Validierungsfehler",
+    "networkError": "Netzwerkfehler",
+    "serverError": "Serverfehler",
+    "timeout": "Zeitüberschreitung"
+  },
+  "accessibility": {
+    "panel_title": "Barrierefreiheit",
+    "panelTitle": "Barrierefreiheit",
+    "font_size": "Schriftgröße",
+    "fontSize": "Schriftgröße",
+    "high_contrast": "Hoher Kontrast",
+    "highContrast": "Hoher Kontrast",
+    "reduced_motion": "Reduzierte Bewegung",
+    "reducedMotion": "Reduzierte Bewegung",
+    "focus_indicators": "Fokus-Indikatoren",
+    "focusIndicators": "Fokus-Indikatoren",
+    "reset": "Zurücksetzen",
+    "skip_to_content": "Zum Hauptinhalt springen",
+    "skipToContent": "Zum Hauptinhalt springen",
+    "close": "Schließen"
+  },
+  "language": {
+    "select": "Sprache wählen",
+    "selectLanguage": "Sprache wählen",
+    "de": "Deutsch",
+    "en": "English"
+  },
+  "apiKeys": {
+    "title": "API-Schlüssel",
+    "create": "Neuer API-Schlüssel",
+    "name": "Name",
+    "key": "Schlüssel",
+    "created": "Erstellt",
+    "lastUsed": "Zuletzt verwendet",
+    "status": "Status",
+    "active": "Aktiv",
+    "inactive": "Inaktiv",
+    "revoke": "Widerrufen",
+    "copy": "Kopieren",
+    "copied": "Kopiert!"
+  },
+  "usage": {
+    "title": "Nutzungsstatistiken",
+    "today": "Heute",
+    "thisWeek": "Diese Woche",
+    "thisMonth": "Dieser Monat",
+    "requests": "Anfragen",
+    "tokens": "Tokens",
+    "costs": "Kosten",
+    "byProvider": "Nach Provider",
+    "byModel": "Nach Modell",
+    "timeline": "Zeitverlauf"
+  },
+  "billing": {
+    "title": "Abrechnung",
+    "currentPlan": "Aktueller Plan",
+    "credits": "Guthaben",
+    "addCredits": "Guthaben aufladen",
+    "invoices": "Rechnungen",
+    "paymentMethod": "Zahlungsmethode",
+    "updatePayment": "Zahlungsmethode aktualisieren",
+    "billingHistory": "Abrechnungsverlauf",
+    "downloadInvoice": "Rechnung herunterladen"
+  },
+  "settings": {
+    "title": "Einstellungen",
+    "profile": "Profil",
+    "security": "Sicherheit",
+    "notifications": "Benachrichtigungen",
+    "preferences": "Einstellungen",
+    "account": "Konto",
+    "changePassword": "Passwort ändern",
+    "twoFactor": "Zwei-Faktor-Authentifizierung",
+    "deleteAccount": "Konto löschen"
+  },
+  "form": {
+    "required": "Erforderlich",
+    "optional": "Optional",
+    "placeholder": {
+      "email": "ihre@email.de",
+      "password": "Ihr Passwort",
+      "search": "Suchen...",
+      "name": "Ihr Name"
+    }
+  },
+  "notifications": {
+    "success": {
+      "saved": "Erfolgreich gespeichert",
+      "created": "Erfolgreich erstellt",
+      "updated": "Erfolgreich aktualisiert",
+      "deleted": "Erfolgreich gelöscht"
+    },
+    "error": {
+      "loadFailed": "Laden fehlgeschlagen",
+      "saveFailed": "Speichern fehlgeschlagen",
+      "deleteFailed": "Löschen fehlgeschlagen"
+    }
+  },
+  "footer": {
+    "company": "Unternehmen",
+    "about": "Über uns",
+    "contact": "Kontakt",
+    "careers": "Karriere",
+    "legal": "Rechtliches",
+    "privacy": "Datenschutz",
+    "terms": "AGB",
+    "imprint": "Impressum",
+    "resources": "Ressourcen",
+    "documentation": "Dokumentation",
+    "apiReference": "API-Referenz",
+    "support": "Support",
+    "status": "Status"
+  }
+}

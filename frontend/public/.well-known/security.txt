@@ -1,0 +1,8 @@
+Contact: security@ai-orchestra.example.com
+Expires: 2026-12-31T23:59:59.000Z
+Encryption: https://ai-orchestra.example.com/pgp-key.txt
+Preferred-Languages: en, de
+Canonical: https://ai-orchestra.example.com/.well-known/security.txt
+Policy: https://ai-orchestra.example.com/security-policy
+Acknowledgments: https://ai-orchestra.example.com/security-thanks
+Hiring: https://ai-orchestra.example.com/careers

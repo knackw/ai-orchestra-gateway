@@ -576,6 +576,7 @@ class TestExceptionHandling:
         # Verify newlines are preserved
         assert sanitized.count("\n") == 2
 
+
     def test_tabs_with_pii(self):
         """Test text with tabs."""
         text = "Email:\tuser@test.com\tPhone:\t+49 123 456789"
@@ -586,4 +587,20 @@ class TestExceptionHandling:
         assert "+49 123 456789" not in sanitized
         # Verify tabs are preserved
         assert "\t" in sanitized
+
+    def test_internal_exception(self):
+        """Test fail-open behavior when an exception occurs."""
+        import unittest.mock
+
+        text = "This text should be returned as is"
+
+        # Mock EMAIL_PATTERN to raise an exception
+        # We mock the class attribute on the class itself
+        with unittest.mock.patch.object(DataPrivacyShield, 'EMAIL_PATTERN') as mock_pattern:
+            mock_pattern.findall.side_effect = Exception("Test error")
+
+            sanitized, found = DataPrivacyShield.sanitize(text)
+
+            assert found is False
+            assert sanitized == text
 

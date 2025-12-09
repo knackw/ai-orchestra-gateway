@@ -5,6 +5,16 @@ pydantic-settings>=2.0.0
 httpx[http2]>=0.24.0
 supabase>=2.0.0
 python-dotenv>=1.0.0
+stripe
+slowapi
+redis>=5.0.0
+sentry-sdk[fastapi]>=2.0.0
+prometheus-fastapi-instrumentator>=7.0.0
+jinja2>=3.1.0
+
+# Google Cloud / Vertex AI
+google-cloud-aiplatform>=1.38.0
+anthropic[vertex]>=0.39.0
 
 # Dev dependencies
 pytest>=7.0.0

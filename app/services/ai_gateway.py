@@ -7,7 +7,6 @@ multiple AI providers (Anthropic, Scaleway, etc.) with consistent interface.
 
 import logging
 from abc import ABC, abstractmethod
-from typing import Dict, List, Optional, Tuple
 
 logger = logging.getLogger(__name__)
 
@@ -58,7 +57,7 @@ class AIProvider(ABC):
         pass
 
     @abstractmethod
-    async def generate(self, prompt: str) -> Tuple[str, int]:
+    async def generate(self, prompt: str) -> tuple[str, int]:
         """
         Generate AI response for the given prompt.
 
@@ -81,7 +80,7 @@ class ProviderRegistry:
 
     def __init__(self):
         """Initialize empty provider registry."""
-        self._providers: Dict[str, AIProvider] = {}
+        self._providers: dict[str, AIProvider] = {}
 
     def register(self, name: str, provider: AIProvider) -> None:
         """
@@ -130,7 +129,7 @@ class ProviderRegistry:
 
         return self._providers[name]
 
-    def list_providers(self) -> List[str]:
+    def list_providers(self) -> list[str]:
         """
         List all registered provider names.
 
@@ -191,7 +190,7 @@ class AIGateway:
     through the registry.
     """
 
-    def __init__(self, registry: Optional[ProviderRegistry] = None):
+    def __init__(self, registry: ProviderRegistry | None = None):
         """
         Initialize AI Gateway.
 
@@ -202,7 +201,7 @@ class AIGateway:
 
     async def generate(
         self, prompt: str, provider_name: str = "anthropic"
-    ) -> Tuple[str, int]:
+    ) -> tuple[str, int]:
         """
         Generate AI response using specified provider.
 
@@ -239,7 +238,7 @@ class AIGateway:
                 f"Failed to generate response: {str(e)}"
             ) from e
 
-    def list_available_providers(self) -> List[str]:
+    def list_available_providers(self) -> list[str]:
         """
         List all available AI providers.
 

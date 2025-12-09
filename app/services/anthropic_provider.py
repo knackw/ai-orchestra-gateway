@@ -5,7 +5,6 @@ Provides integration with Anthropic's Claude models via direct HTTP API calls.
 """
 
 import logging
-from typing import Tuple
 
 import httpx
 
@@ -54,7 +53,7 @@ class AnthropicProvider(AIProvider):
         """Return provider name."""
         return "anthropic"
 
-    async def generate(self, prompt: str) -> Tuple[str, int]:
+    async def generate(self, prompt: str) -> tuple[str, int]:
         """
         Generate AI response using Claude API.
 

@@ -1,0 +1,358 @@
+{
+  "common": {
+    "login": "Login",
+    "signup": "Sign Up",
+    "logout": "Logout",
+    "save": "Save",
+    "cancel": "Cancel",
+    "delete": "Delete",
+    "edit": "Edit",
+    "create": "Create",
+    "search": "Search",
+    "filter": "Filter",
+    "export": "Export",
+    "loading": "Loading...",
+    "error": "Error",
+    "success": "Success",
+    "warning": "Warning",
+    "info": "Information",
+    "back": "Back",
+    "next": "Next",
+    "previous": "Previous",
+    "confirm": "Confirm",
+    "close": "Close",
+    "yes": "Yes",
+    "no": "No",
+    "submit": "Submit",
+    "apply": "Apply",
+    "reset": "Reset"
+  },
+  "navigation": {
+    "home": "Home",
+    "dashboard": "Dashboard",
+    "apiKeys": "API Keys",
+    "usage": "Usage",
+    "billing": "Billing",
+    "settings": "Settings",
+    "admin": "Administration",
+    "features": "Features",
+    "pricing": "Pricing",
+    "docs": "Documentation",
+    "blog": "Blog",
+    "apps": "Applications",
+    "analytics": "Analytics",
+    "auditLogs": "Audit Logs",
+    "tenants": "Tenants",
+    "licenses": "Licenses",
+    "users": "Users"
+  },
+  "landing": {
+    "hero": {
+      "title": "AI Power for Your Business",
+      "subtitle": "GDPR Compliant",
+      "description": "Multi-Provider AI Gateway with integrated Privacy Shield. Automatic PII detection and anonymization. 100% GDPR compliant with EU data residency.",
+      "cta": "Get Started Free",
+      "demo": "Request Demo",
+      "cta_primary": "Get Started Free",
+      "cta_secondary": "Live Demo"
+    },
+    "features": {
+      "title": "Features",
+      "subtitle": "Why AI Legal Ops?",
+      "privacyShield": {
+        "title": "Privacy Shield",
+        "description": "Automatic PII detection and anonymization"
+      },
+      "multiProvider": {
+        "title": "Multi-Provider",
+        "description": "Anthropic, Scaleway, Google Vertex AI"
+      },
+      "euHosting": {
+        "title": "EU Hosting",
+        "description": "100% GDPR compliant with EU data residency"
+      },
+      "pii_shield": {
+        "title": "PII Shield",
+        "description": "Automatic detection & redaction of personal data"
+      },
+      "multi_tenant": {
+        "title": "Multi-Tenant",
+        "description": "Isolated tenants with their own credits and API keys"
+      },
+      "pay_per_use": {
+        "title": "Pay-per-Use",
+        "description": "Flexible credit-based billing without base fee"
+      },
+      "failover": {
+        "title": "Provider Failover",
+        "description": "Automatic switching on provider failure"
+      },
+      "analytics": {
+        "title": "Usage Analytics",
+        "description": "Detailed usage statistics in real-time"
+      },
+      "gdpr": {
+        "title": "GDPR Compliant",
+        "description": "EU data residency, German servers"
+      }
+    },
+    "pricing": {
+      "title": "Pricing",
+      "subtitle": "Simple, transparent pricing",
+      "starter": "Starter",
+      "professional": "Professional",
+      "enterprise": "Enterprise",
+      "perMonth": "/ month",
+      "tokens": "Tokens",
+      "selectPlan": "Select Plan",
+      "monthly": "Monthly",
+      "yearly": "Yearly",
+      "save": "Save 20%",
+      "starterPlan": {
+        "name": "Starter",
+        "price": "0",
+        "description": "To get started",
+        "cta": "Start for Free"
+      },
+      "professionalPlan": {
+        "name": "Professional",
+        "price": "49",
+        "description": "For growing teams",
+        "cta": "Upgrade Now",
+        "badge": "Recommended"
+      },
+      "enterprisePlan": {
+        "name": "Enterprise",
+        "price": "On Request",
+        "description": "For large organizations",
+        "cta": "Contact Us"
+      }
+    },
+    "faq": {
+      "title": "Frequently Asked Questions"
+    },
+    "cta": {
+      "title": "Ready for secure AI integration?",
+      "subtitle": "Get started in less than 5 minutes. No credit card required.",
+      "button": "Start for Free"
+    }
+  },
+  "auth": {
+    "login": {
+      "title": "Login",
+      "subtitle": "Welcome back",
+      "description": "Sign in to continue",
+      "email": "Email address",
+      "password": "Password",
+      "forgotPassword": "Forgot password?",
+      "noAccount": "Don't have an account?",
+      "signupLink": "Sign up now",
+      "remember": "Remember me",
+      "forgot": "Forgot password?",
+      "submit": "Sign In",
+      "no_account": "Don't have an account?",
+      "signup_link": "Sign up now"
+    },
+    "signup": {
+      "title": "Sign Up",
+      "subtitle": "Create Account",
+      "description": "Get started for free",
+      "company": "Company (optional)",
+      "name": "Full Name",
+      "email": "Email address",
+      "password": "Password",
+      "confirmPassword": "Confirm Password",
+      "confirm_password": "Confirm Password",
+      "acceptTerms": "I accept the Terms & Conditions",
+      "acceptPrivacy": "I accept the Privacy Policy",
+      "accept_terms": "I accept the Terms & Conditions and Privacy Policy",
+      "hasAccount": "Already have an account?",
+      "loginLink": "Sign in now",
+      "submit": "Sign Up",
+      "has_account": "Already have an account?",
+      "login_link": "Sign in now"
+    },
+    "resetPassword": {
+      "title": "Reset Password",
+      "description": "Enter your email address",
+      "submit": "Send Link",
+      "success": "Email has been sent"
+    },
+    "forgot_password": {
+      "title": "Forgot Password?",
+      "subtitle": "Enter your email to receive a reset link",
+      "submit": "Send Reset Link",
+      "back": "Back to Sign In",
+      "success": "Reset link has been sent"
+    },
+    "reset_password": {
+      "title": "Set New Password",
+      "password": "New Password",
+      "confirm": "Confirm Password",
+      "submit": "Change Password"
+    },
+    "verify_email": {
+      "title": "Verify Email",
+      "message": "We've sent you a verification email.",
+      "resend": "Resend Email",
+      "resent": "Email has been resent"
+    }
+  },
+  "dashboard": {
+    "title": "Dashboard",
+    "welcome": "Welcome back",
+    "overview": "Overview",
+    "api_keys": "API Keys",
+    "usage": "Usage",
+    "billing": "Billing",
+    "settings": "Settings",
+    "credits": {
+      "title": "Credits",
+      "remaining": "Remaining",
+      "used": "Used",
+      "top_up": "Top Up"
+    },
+    "stats": {
+      "requests": "Requests",
+      "requestsToday": "Requests today",
+      "tokens": "Tokens",
+      "tokensThisMonth": "Tokens this month",
+      "errors": "Errors"
+    },
+    "apiKeys": "Active API Keys"
+  },
+  "admin": {
+    "title": "Administration",
+    "tenants": "Tenants",
+    "licenses": "Licenses",
+    "users": "Users",
+    "audit_logs": "Audit Logs",
+    "auditLogs": "Audit Logs",
+    "analytics": "Analytics",
+    "billing": "Billing",
+    "settings": "Settings",
+    "apps": "Applications"
+  },
+  "errors": {
+    "required": "This field is required",
+    "invalidEmail": "Invalid email address",
+    "passwordMin": "At least {min} characters",
+    "passwordMatch": "Passwords do not match",
+    "generic": "An error occurred",
+    "not_found": "Not found",
+    "unauthorized": "Unauthorized",
+    "forbidden": "Access denied",
+    "validation": "Validation error",
+    "networkError": "Network error",
+    "serverError": "Server error",
+    "timeout": "Request timeout"
+  },
+  "accessibility": {
+    "panel_title": "Accessibility",
+    "panelTitle": "Accessibility",
+    "font_size": "Font Size",
+    "fontSize": "Font Size",
+    "high_contrast": "High Contrast",
+    "highContrast": "High Contrast",
+    "reduced_motion": "Reduced Motion",
+    "reducedMotion": "Reduced Motion",
+    "focus_indicators": "Focus Indicators",
+    "focusIndicators": "Focus Indicators",
+    "reset": "Reset to Defaults",
+    "skip_to_content": "Skip to main content",
+    "skipToContent": "Skip to main content",
+    "close": "Close"
+  },
+  "language": {
+    "select": "Select Language",
+    "selectLanguage": "Select Language",
+    "de": "Deutsch",
+    "en": "English"
+  },
+  "apiKeys": {
+    "title": "API Keys",
+    "create": "New API Key",
+    "name": "Name",
+    "key": "Key",
+    "created": "Created",
+    "lastUsed": "Last Used",
+    "status": "Status",
+    "active": "Active",
+    "inactive": "Inactive",
+    "revoke": "Revoke",
+    "copy": "Copy",
+    "copied": "Copied!"
+  },
+  "usage": {
+    "title": "Usage Statistics",
+    "today": "Today",
+    "thisWeek": "This Week",
+    "thisMonth": "This Month",
+    "requests": "Requests",
+    "tokens": "Tokens",
+    "costs": "Costs",
+    "byProvider": "By Provider",
+    "byModel": "By Model",
+    "timeline": "Timeline"
+  },
+  "billing": {
+    "title": "Billing",
+    "currentPlan": "Current Plan",
+    "credits": "Credits",
+    "addCredits": "Add Credits",
+    "invoices": "Invoices",
+    "paymentMethod": "Payment Method",
+    "updatePayment": "Update Payment Method",
+    "billingHistory": "Billing History",
+    "downloadInvoice": "Download Invoice"
+  },
+  "settings": {
+    "title": "Settings",
+    "profile": "Profile",
+    "security": "Security",
+    "notifications": "Notifications",
+    "preferences": "Preferences",
+    "account": "Account",
+    "changePassword": "Change Password",
+    "twoFactor": "Two-Factor Authentication",
+    "deleteAccount": "Delete Account"
+  },
+  "form": {
+    "required": "Required",
+    "optional": "Optional",
+    "placeholder": {
+      "email": "your@email.com",
+      "password": "Your password",
+      "search": "Search...",
+      "name": "Your name"
+    }
+  },
+  "notifications": {
+    "success": {
+      "saved": "Successfully saved",
+      "created": "Successfully created",
+      "updated": "Successfully updated",
+      "deleted": "Successfully deleted"
+    },
+    "error": {
+      "loadFailed": "Failed to load",
+      "saveFailed": "Failed to save",
+      "deleteFailed": "Failed to delete"
+    }
+  },
+  "footer": {
+    "company": "Company",
+    "about": "About Us",
+    "contact": "Contact",
+    "careers": "Careers",
+    "legal": "Legal",
+    "privacy": "Privacy",
+    "terms": "Terms & Conditions",
+    "imprint": "Imprint",
+    "resources": "Resources",
+    "documentation": "Documentation",
+    "apiReference": "API Reference",
+    "support": "Support",
+    "status": "Status"
+  }
+}

@@ -6,7 +6,6 @@ atomic, race-condition-free billing operations.
 """
 
 import logging
-from typing import Optional
 
 from fastapi import HTTPException
 
@@ -89,4 +88,39 @@ class BillingService:
             raise HTTPException(
                 status_code=500,
                 detail="Billing system error. Please try again later."
+            )
+
+    @staticmethod
+    async def add_credits(license_key: str, credits_to_add: int) -> None:
+        """
+        Add credits to a license.
+        
+        Args:
+            license_key: The license key to credit.
+            credits_to_add: Amount of credits to add.
+            
+        Raises:
+            HTTPException: If license not found or DB error.
+        """
+        client = get_supabase_client(use_service_role=True)  # Must be admin to add credits
+        
+        try:
+            # Call PostgreSQL function 'add_credits'
+            response = client.rpc(
+                "add_credits",
+                {"license_key_param": license_key, "credits_to_add": credits_to_add}
+            ).execute()
+            
+            # Successful RPC returns None (void) but raises error if failed inside PG
+            
+        except Exception as e:
+            error_message = str(e)
+            logger.error(f"Failed to add credits: {error_message}")
+            
+            if "INVALID_LICENSE" in error_message:
+                raise HTTPException(status_code=404, detail="License not found.")
+            
+            raise HTTPException(
+                status_code=500,
+                detail="Billing system error during credit addition."
             )

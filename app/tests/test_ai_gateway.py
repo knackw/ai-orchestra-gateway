@@ -2,8 +2,6 @@
 Unit tests for AI Gateway service.
 """
 
-from typing import Tuple
-
 import pytest
 
 from app.services.ai_gateway import (
@@ -30,7 +28,7 @@ class MockProvider(AIProvider):
     def provider_name(self) -> str:
         return self._name
 
-    async def generate(self, prompt: str) -> Tuple[str, int]:
+    async def generate(self, prompt: str) -> tuple[str, int]:
         if self._fail:
             raise Exception("Mock provider failure")
         return f"Response to: {prompt}", 42

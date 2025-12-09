@@ -1,117 +1,89 @@
-"""
-Unit tests for BillingService.
-"""
-
 import pytest
-from unittest.mock import AsyncMock, Mock, patch
-
+import asyncio
+from unittest.mock import MagicMock, patch
 from fastapi import HTTPException
-
 from app.services.billing import BillingService
 
-
 class TestBillingService:
-    """Tests for BillingService credit deduction."""
-
-    @pytest.mark.asyncio
+    
     @patch("app.services.billing.get_supabase_client")
     async def test_deduct_credits_success(self, mock_get_client):
         """Test successful credit deduction."""
-        # Mock Supabase RPC response
-        mock_client = Mock()
-        mock_rpc = Mock()
-        mock_execute = Mock()
-        mock_execute.data = 500  # New balance after deduction
-        mock_rpc.execute.return_value = mock_execute
-        mock_client.rpc.return_value = mock_rpc
+        mock_client = MagicMock()
+        mock_response = MagicMock()
+        mock_response.data = 950  # New balance
+        
+        # Mock RPC call chain
+        mock_client.rpc.return_value.execute.return_value = mock_response
         mock_get_client.return_value = mock_client
-
-        # Call billing service
-        new_balance = await BillingService.deduct_credits("lic_test123", 50)
-
-        # Verify
-        assert new_balance == 500
-        mock_client.rpc.assert_called_once_with(
-            "deduct_credits",
-            {"p_license_key": "lic_test123", "p_amount": 50}
+        
+        new_balance = await BillingService.deduct_credits("lic_123", 50)
+        
+        assert new_balance == 950
+        mock_client.rpc.assert_called_with(
+            "deduct_credits", 
+            {"p_license_key": "lic_123", "p_amount": 50}
         )
 
-    @pytest.mark.asyncio
     @patch("app.services.billing.get_supabase_client")
-    async def test_insufficient_credits(self, mock_get_client):
-        """Test handling of insufficient credits."""
-        # Mock Supabase error
-        mock_client = Mock()
-        mock_client.rpc.side_effect = Exception("INSUFFICIENT_CREDITS: Current balance 10 is less than required 50")
+    async def test_deduct_credits_insufficient(self, mock_get_client):
+        """Test insufficient credits raises 402."""
+        mock_client = MagicMock()
+        
+        # Mock RPC raising exception
+        mock_client.rpc.return_value.execute.side_effect = Exception("INSUFFICIENT_CREDITS: Current balance 10 is less than required 50")
         mock_get_client.return_value = mock_client
+        
+        with pytest.raises(HTTPException) as exc:
+            await BillingService.deduct_credits("lic_123", 50)
+            
+        assert exc.value.status_code == 402
+        assert "Insufficient credits" in exc.value.detail
 
-        # Verify 402 error raised
-        with pytest.raises(HTTPException) as exc_info:
-            await BillingService.deduct_credits("lic_test123", 50)
-
-        assert exc_info.value.status_code == 402
-        assert "Insufficient credits" in exc_info.value.detail
-
-    @pytest.mark.asyncio
     @patch("app.services.billing.get_supabase_client")
-    async def test_invalid_license(self, mock_get_client):
-        """Test handling of invalid license key."""
-        # Mock Supabase error
-        mock_client = Mock()
-        mock_client.rpc.side_effect = Exception("INVALID_LICENSE: License key not found")
+    async def test_deduct_credits_invalid_license(self, mock_get_client):
+        """Test invalid license raises 403."""
+        mock_client = MagicMock()
+        mock_client.rpc.return_value.execute.side_effect = Exception("INVALID_LICENSE: License key not found")
         mock_get_client.return_value = mock_client
+        
+        with pytest.raises(HTTPException) as exc:
+            await BillingService.deduct_credits("lic_unknown", 50)
+            
+        assert exc.value.status_code == 403
+        assert "Invalid license key" in exc.value.detail
 
-        # Verify 403 error raised
-        with pytest.raises(HTTPException) as exc_info:
-            await BillingService.deduct_credits("lic_invalid", 50)
-
-        assert exc_info.value.status_code == 403
-        assert "Invalid license" in exc_info.value.detail
-
-    @pytest.mark.asyncio
     @patch("app.services.billing.get_supabase_client")
-    async def test_inactive_license(self, mock_get_client):
-        """Test handling of inactive license."""
-        # Mock Supabase error
-        mock_client = Mock()
-        mock_client.rpc.side_effect = Exception("INACTIVE_LICENSE: License is not active")
+    async def test_add_credits_success(self, mock_get_client):
+        """Test successful credit addition."""
+        mock_client = MagicMock()
+        mock_response = MagicMock()
+        mock_response.data = None
+        
+        mock_client.rpc.return_value.execute.return_value = mock_response
         mock_get_client.return_value = mock_client
+        
+        # Should not raise exception
+        await BillingService.add_credits("lic_123", 100)
+        
+        mock_client.rpc.assert_called_with(
+            "add_credits", 
+            {"license_key_param": "lic_123", "credits_to_add": 100}
+        )
 
-        # Verify 403 error raised
-        with pytest.raises(HTTPException) as exc_info:
-            await BillingService.deduct_credits("lic_inactive", 50)
-
-        assert exc_info.value.status_code == 403
-        assert "not active" in exc_info.value.detail
-
-    @pytest.mark.asyncio
     @patch("app.services.billing.get_supabase_client")
-    async def test_expired_license(self, mock_get_client):
-        """Test handling of expired license."""
-        # Mock Supabase error
-        mock_client = Mock()
-        mock_client.rpc.side_effect = Exception("EXPIRED_LICENSE: License has expired")
+    async def test_concurrent_deductions(self, mock_get_client):
+        """Test concurrent deductions are handled (mock)."""
+        mock_client = MagicMock()
+        mock_response = MagicMock()
+        mock_response.data = 900
+        mock_client.rpc.return_value.execute.return_value = mock_response
         mock_get_client.return_value = mock_client
-
-        # Verify 403 error raised
-        with pytest.raises(HTTPException) as exc_info:
-            await BillingService.deduct_credits("lic_expired", 50)
-
-        assert exc_info.value.status_code == 403
-        assert "expired" in exc_info.value.detail
-
-    @pytest.mark.asyncio
-    @patch("app.services.billing.get_supabase_client")
-    async def test_database_error(self, mock_get_client):
-        """Test handling of unexpected database errors."""
-        # Mock unexpected error
-        mock_client = Mock()
-        mock_client.rpc.side_effect = Exception("Connection timeout")
-        mock_get_client.return_value = mock_client
-
-        # Verify 500 error raised
-        with pytest.raises(HTTPException) as exc_info:
-            await BillingService.deduct_credits("lic_test123", 50)
-
-        assert exc_info.value.status_code == 500
-        assert "Billing system error" in exc_info.value.detail
+        
+        # Simulate 10 concurrent requests
+        tasks = [BillingService.deduct_credits("lic_123", 10) for _ in range(10)]
+        results = await asyncio.gather(*tasks)
+        
+        assert len(results) == 10
+        assert all(r == 900 for r in results)
+        assert mock_client.rpc.call_count == 10

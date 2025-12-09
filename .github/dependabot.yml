@@ -1,0 +1,212 @@
+# =============================================================================
+# Dependabot Configuration - SEC-014
+# Automatic dependency security scanning and updates
+# =============================================================================
+
+version: 2
+
+updates:
+  # -----------------------------------------------------------------------------
+  # Python (pip) Dependencies - Backend
+  # -----------------------------------------------------------------------------
+  - package-ecosystem: "pip"
+    directory: "/"
+    schedule:
+      interval: "weekly"
+      day: "monday"
+      time: "06:00"
+      timezone: "Europe/Berlin"
+
+    # Group minor and patch updates together to reduce PR noise
+    groups:
+      python-dependencies:
+        patterns:
+          - "*"
+        update-types:
+          - "minor"
+          - "patch"
+
+    # Keep security updates separate for immediate attention
+    open-pull-requests-limit: 10
+
+    # Labels for PRs
+    labels:
+      - "dependencies"
+      - "python"
+      - "security"
+
+    # Reviewers (update with actual GitHub usernames)
+    reviewers:
+      - "ai-legal-ops-team"
+
+    # Commit message prefix
+    commit-message:
+      prefix: "chore(deps)"
+      prefix-development: "chore(deps-dev)"
+      include: "scope"
+
+    # Allow Dependabot to rebase PRs
+    rebase-strategy: "auto"
+
+    # Ignore specific dependencies (if needed)
+    # ignore:
+    #   - dependency-name: "package-name"
+    #     versions: ["1.x", "2.x"]
+
+  # -----------------------------------------------------------------------------
+  # npm Dependencies - Frontend
+  # -----------------------------------------------------------------------------
+  - package-ecosystem: "npm"
+    directory: "/frontend"
+    schedule:
+      interval: "weekly"
+      day: "monday"
+      time: "06:00"
+      timezone: "Europe/Berlin"
+
+    # Group minor and patch updates together
+    groups:
+      npm-dependencies:
+        patterns:
+          - "*"
+        update-types:
+          - "minor"
+          - "patch"
+
+      # Group React ecosystem updates
+      react-dependencies:
+        patterns:
+          - "react*"
+          - "next*"
+          - "@types/react*"
+        update-types:
+          - "minor"
+          - "patch"
+
+      # Group Radix UI updates
+      radix-dependencies:
+        patterns:
+          - "@radix-ui/*"
+        update-types:
+          - "minor"
+          - "patch"
+
+    open-pull-requests-limit: 10
+
+    labels:
+      - "dependencies"
+      - "npm"
+      - "frontend"
+      - "security"
+
+    reviewers:
+      - "ai-legal-ops-team"
+
+    commit-message:
+      prefix: "chore(deps)"
+      prefix-development: "chore(deps-dev)"
+      include: "scope"
+
+    rebase-strategy: "auto"
+
+    # Ignore specific npm packages (if needed)
+    # ignore:
+    #   - dependency-name: "@types/node"
+    #     update-types: ["version-update:semver-major"]
+
+  # -----------------------------------------------------------------------------
+  # GitHub Actions
+  # -----------------------------------------------------------------------------
+  - package-ecosystem: "github-actions"
+    directory: "/"
+    schedule:
+      interval: "weekly"
+      day: "monday"
+      time: "06:00"
+      timezone: "Europe/Berlin"
+
+    # Group all GitHub Actions updates
+    groups:
+      github-actions:
+        patterns:
+          - "*"
+        update-types:
+          - "minor"
+          - "patch"
+
+    open-pull-requests-limit: 5
+
+    labels:
+      - "dependencies"
+      - "github-actions"
+      - "ci-cd"
+
+    reviewers:
+      - "ai-legal-ops-team"
+
+    commit-message:
+      prefix: "chore(ci)"
+      include: "scope"
+
+    rebase-strategy: "auto"
+
+  # -----------------------------------------------------------------------------
+  # Docker Base Images
+  # -----------------------------------------------------------------------------
+  - package-ecosystem: "docker"
+    directory: "/"
+    schedule:
+      interval: "weekly"
+      day: "monday"
+      time: "06:00"
+      timezone: "Europe/Berlin"
+
+    open-pull-requests-limit: 5
+
+    labels:
+      - "dependencies"
+      - "docker"
+      - "security"
+
+    reviewers:
+      - "ai-legal-ops-team"
+
+    commit-message:
+      prefix: "chore(docker)"
+      include: "scope"
+
+    rebase-strategy: "auto"
+
+    # Only update Python base image to patch versions
+    ignore:
+      - dependency-name: "python"
+        update-types: ["version-update:semver-major", "version-update:semver-minor"]
+
+# =============================================================================
+# Configuration Notes:
+# =============================================================================
+#
+# 1. Security Updates:
+#    - Security updates are NOT grouped and create individual PRs
+#    - This ensures critical security patches get immediate attention
+#    - All security PRs are labeled with "security"
+#
+# 2. Auto-merge Setup:
+#    - To enable auto-merge, configure branch protection rules
+#    - Require status checks to pass before merging
+#    - Use GitHub Actions workflow for automated approval (see docs)
+#
+# 3. Reviewers:
+#    - Update "ai-legal-ops-team" with actual GitHub team or usernames
+#    - Format: ["username"] or ["org/team-name"]
+#
+# 4. Schedule:
+#    - All updates run weekly on Monday at 06:00 CET
+#    - Adjust timezone and time based on team preferences
+#
+# 5. Open PR Limits:
+#    - Python/npm: 10 PRs max (includes grouped + security)
+#    - GitHub Actions: 5 PRs max
+#    - Docker: 5 PRs max
+#
+# =============================================================================

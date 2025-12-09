@@ -6,39 +6,128 @@ on:
   pull_request:
     branches: [ "master", "main" ]
 
+permissions:
+  contents: read
+  security-events: write
+  pull-requests: write
+
 jobs:
-  quality-check:
+  # ---------------------------------------------------------------------------
+  # Security Scanning - SEC-014
+  # ---------------------------------------------------------------------------
+  security-scan:
+    name: Security Scan
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v3
-      
+      - name: Checkout code
+        uses: actions/checkout@v4
+
       - name: Set up Python
-        uses: actions/setup-python@v4
+        uses: actions/setup-python@v5
         with:
-          python-version: "3.11"
-      
+          python-version: "3.12"
+          cache: 'pip'
+
+      - name: Install pip-audit
+        run: |
+          python -m pip install --upgrade pip
+          pip install pip-audit
+
+      - name: Run pip-audit on requirements
+        run: |
+          pip-audit --requirement requirements.txt --format json --output pip-audit.json || true
+          pip-audit --requirement requirements.txt || true
+
+      - name: Upload pip-audit results
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: pip-audit-results
+          path: pip-audit.json
+          retention-days: 30
+
+  # ---------------------------------------------------------------------------
+  # Code Quality Check
+  # ---------------------------------------------------------------------------
+  quality-check:
+    name: Quality Check
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: 'pip'
+
       - name: Install Dependencies
         run: |
           python -m pip install --upgrade pip
-          pip install ruff pytest pytest-cov httpx
+          pip install ruff pytest pytest-cov httpx pytest-asyncio
           pip install -r requirements.txt
-          
+
       - name: Linting (Ruff)
         run: ruff check .
-        
-      - name: Run Tests
-        run: pytest
 
+      - name: Run Tests
+        run: pytest --cov=app --cov-report=xml --cov-report=term
+
+      - name: Upload coverage reports
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: coverage-report
+          path: coverage.xml
+          retention-days: 30
+
+  # ---------------------------------------------------------------------------
+  # Docker Build & Security Scan
+  # ---------------------------------------------------------------------------
   build-docker:
-    needs: quality-check
+    name: Build & Scan Docker
+    needs: [security-scan, quality-check]
     runs-on: ubuntu-latest
     if: github.event_name == 'push' && (github.ref == 'refs/heads/master' || github.ref == 'refs/heads/main')
     steps:
-      - uses: actions/checkout@v3
-      
+      - name: Checkout code
+        uses: actions/checkout@v4
+
       - name: Build Docker Image
-        run: docker build . --file Dockerfile --tag ai-orchestra-gateway:latest
-        
+        run: |
+          docker build . --file Dockerfile --target production \
+            --tag ai-orchestra-gateway:latest \
+            --tag ai-orchestra-gateway:${{ github.sha }}
+
+      - name: Run Trivy vulnerability scanner
+        uses: aquasecurity/trivy-action@master
+        with:
+          image-ref: 'ai-orchestra-gateway:latest'
+          format: 'sarif'
+          output: 'trivy-results.sarif'
+          severity: 'CRITICAL,HIGH'
+
+      - name: Upload Trivy results to GitHub Security
+        uses: github/codeql-action/upload-sarif@v3
+        if: always()
+        with:
+          sarif_file: 'trivy-results.sarif'
+
+      - name: Generate Trivy report
+        uses: aquasecurity/trivy-action@master
+        with:
+          image-ref: 'ai-orchestra-gateway:latest'
+          format: 'table'
+          output: 'trivy-report.txt'
+
+      - name: Upload Trivy report
+        uses: actions/upload-artifact@v4
+        with:
+          name: trivy-security-report
+          path: trivy-report.txt
+          retention-days: 30
+
       # - name: Push to Registry
       #   run: |
       #     echo "Pushing to registry..."

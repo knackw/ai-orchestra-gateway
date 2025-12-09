@@ -7,7 +7,6 @@ from text before sending to AI providers, ensuring DSGVO compliance.
 
 import logging
 import re
-from typing import Tuple
 
 logger = logging.getLogger(__name__)
 
@@ -43,7 +42,7 @@ class DataPrivacyShield:
     IBAN_PLACEHOLDER = "<IBAN_REMOVED>"
 
     @classmethod
-    def sanitize(cls, text: str) -> Tuple[str, bool]:
+    def sanitize(cls, text: str) -> tuple[str, bool]:
         """
         Sanitize text by removing PII and replacing with placeholders.
 

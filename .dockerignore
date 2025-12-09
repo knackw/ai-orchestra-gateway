@@ -37,4 +37,27 @@ yarn-error.log
 # Testing
 .pytest_cache
 .coverage
+.coverage.*
 htmlcov
+test_*.txt
+
+# Documentation (not needed in container)
+docs/
+*.md
+!README.md
+
+# Local scripts
+scripts/
+monitoring/
+
+# Migrations (mounted separately if needed)
+migrations/
+
+# CI/CD
+.github/
+
+# Misc
+*.log
+*.tmp
+.DS_Store
+Thumbs.db

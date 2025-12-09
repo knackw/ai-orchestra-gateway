@@ -9,12 +9,16 @@ from uuid import uuid4
 
 from app.main import app
 from app.api.admin.licenses import generate_license_key
+from app.core.rbac import Role, UserRole
 
 client = TestClient(app)
 
 MOCK_ADMIN_KEY = "test_admin_key_12345"
+MOCK_LICENSE_KEY = "lic_test_license_key_123"
 VALID_TENANT_ID = "550e8400-e29b-41d4-a716-446655440000"
 VALID_LICENSE_ID = "550e8400-e29b-41d4-a716-446655440001"
+MOCK_USER_ID = str(uuid4())
+API_PREFIX = "/api/v1"
 
 
 @pytest.fixture(autouse=True)
@@ -25,11 +29,59 @@ def mock_admin_key():
         yield
 
 
+@pytest.fixture(autouse=True)
+def mock_license_and_rbac():
+    """
+    Mock license validation and RBAC for all tests.
+    SEC-009: Admin routes require both license key and admin role.
+    """
+    with patch("app.core.security.validate_license_key") as mock_validate, \
+         patch("app.core.admin_auth.get_rbac_service") as mock_rbac_service:
+        # Mock license validation
+        mock_license_info = Mock()
+        mock_license_info.license_key = MOCK_LICENSE_KEY
+        mock_license_info.license_uuid = MOCK_USER_ID
+        mock_license_info.tenant_id = VALID_TENANT_ID
+        mock_license_info.app_id = "test-app"
+        mock_license_info.credits_remaining = 1000
+        mock_license_info.is_active = True
+        mock_license_info.expires_at = None
+        mock_validate.return_value = mock_license_info
+
+        # Mock RBAC service with admin role
+        mock_rbac = Mock()
+        mock_user_role = UserRole(
+            user_id=MOCK_USER_ID,
+            tenant_id=VALID_TENANT_ID,
+            role=Role.ADMIN,
+            granted_by=None,
+            granted_at=None,
+            expires_at=None,
+            is_active=True,
+        )
+
+        async def mock_get_user_role(user_id, tenant_id):
+            return mock_user_role
+
+        mock_rbac.get_user_role = mock_get_user_role
+        mock_rbac_service.return_value = mock_rbac
+
+        yield
+
+
 @pytest.fixture
 def mock_supabase():
     """Mock Supabase client."""
     with patch("app.api.admin.licenses.get_supabase_client") as mock:
         yield mock
+
+
+def get_admin_headers():
+    """Return headers required for admin routes (SEC-009)."""
+    return {
+        "X-Admin-Key": MOCK_ADMIN_KEY,
+        "X-License-Key": MOCK_LICENSE_KEY,
+    }
 
 
 class TestLicenseKeyGeneration:
@@ -69,8 +121,8 @@ class TestLicenseCRUD:
         mock_supabase.return_value = mock_client
 
         response = client.post(
-            "/admin/licenses",
-            headers={"X-Admin-Key": MOCK_ADMIN_KEY},
+            f"{API_PREFIX}/admin/licenses",
+            headers=get_admin_headers(),
             json={
                 "tenant_id": VALID_TENANT_ID,
                 "credits": 10000
@@ -90,8 +142,8 @@ class TestLicenseCRUD:
         mock_supabase.return_value = mock_client
 
         response = client.post(
-            "/admin/licenses",
-            headers={"X-Admin-Key": MOCK_ADMIN_KEY},
+            f"{API_PREFIX}/admin/licenses",
+            headers=get_admin_headers(),
             json={
                 "tenant_id": VALID_TENANT_ID,
                 "credits": 10000
@@ -117,8 +169,8 @@ class TestLicenseCRUD:
         mock_supabase.return_value = mock_client
 
         response = client.get(
-            f"/admin/licenses/{VALID_LICENSE_ID}",
-            headers={"X-Admin-Key": MOCK_ADMIN_KEY}
+            f"{API_PREFIX}/admin/licenses/{VALID_LICENSE_ID}",
+            headers=get_admin_headers()
         )
 
         assert response.status_code == 200
@@ -141,8 +193,8 @@ class TestLicenseCRUD:
         mock_supabase.return_value = mock_client
 
         response = client.get(
-            "/admin/licenses",
-            headers={"X-Admin-Key": MOCK_ADMIN_KEY}
+            f"{API_PREFIX}/admin/licenses",
+            headers=get_admin_headers()
         )
 
         assert response.status_code == 200
@@ -166,8 +218,8 @@ class TestLicenseCRUD:
         mock_supabase.return_value = mock_client
 
         response = client.put(
-            f"/admin/licenses/{VALID_LICENSE_ID}",
-            headers={"X-Admin-Key": MOCK_ADMIN_KEY},
+            f"{API_PREFIX}/admin/licenses/{VALID_LICENSE_ID}",
+            headers=get_admin_headers(),
             json={"credits_remaining": 20000}
         )
 
@@ -181,8 +233,8 @@ class TestLicenseCRUD:
         mock_supabase.return_value = mock_client
 
         response = client.delete(
-            f"/admin/licenses/{VALID_LICENSE_ID}",
-            headers={"X-Admin-Key": MOCK_ADMIN_KEY}
+            f"{API_PREFIX}/admin/licenses/{VALID_LICENSE_ID}",
+            headers=get_admin_headers()
         )
 
         assert response.status_code == 204

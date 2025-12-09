@@ -6,15 +6,15 @@ Internal endpoints for creating and managing licenses with secure API key genera
 
 import logging
 import secrets
-from typing import List, Optional
 from datetime import datetime, timezone
 from uuid import UUID
 
 from fastapi import APIRouter, Depends, HTTPException
 from pydantic import BaseModel, ConfigDict, Field
 
-from app.core.admin_auth import get_admin_key
+from app.core.admin_auth import get_admin_user
 from app.core.database import get_supabase_client
+from app.core.rbac import UserRole
 
 logger = logging.getLogger(__name__)
 
@@ -38,7 +38,7 @@ class LicenseCreate(BaseModel):
     """Request model for creating a license."""
     tenant_id: UUID
     credits: int = Field(default=1000, ge=0)
-    expires_at: Optional[datetime] = None
+    expires_at: datetime | None = None
     
     model_config = ConfigDict(
         json_schema_extra={
@@ -55,33 +55,35 @@ class LicenseResponse(BaseModel):
     """Response model for license."""
     id: UUID
     tenant_id: UUID
-    license_key: Optional[str] = None  # Only shown on creation
+    license_key: str | None = None  # Only shown on creation
     credits_remaining: int
     is_active: bool
-    expires_at: Optional[datetime]
+    expires_at: datetime | None
     created_at: datetime
     updated_at: datetime
 
 
 class LicenseUpdate(BaseModel):
     """Request model for updating a license."""
-    credits_remaining: Optional[int] = Field(None, ge=0)
-    is_active: Optional[bool] = None
-    expires_at: Optional[datetime] = None
+    credits_remaining: int | None = Field(None, ge=0)
+    is_active: bool | None = None
+    expires_at: datetime | None = None
 
 
 @router.post("/licenses", response_model=LicenseResponse, status_code=201)
 async def create_license(
     license: LicenseCreate,
-    _admin: str = Depends(get_admin_key)
+    admin_user: UserRole = Depends(get_admin_user)
 ):
     """
     Create a new license with generated API key.
-    
+
     Returns the license key ONLY on creation. It cannot be retrieved later.
-    Requires X-Admin-Key header for authentication.
+
+    SEC-009: Requires X-Admin-Key header AND admin/owner role.
     """
-    client = get_supabase_client()
+    # Use service role to bypass RLS
+    client = get_supabase_client(use_service_role=True)
     
     try:
         # Verify tenant exists
@@ -131,10 +133,15 @@ async def create_license(
 @router.get("/licenses/{license_id}", response_model=LicenseResponse)
 async def get_license(
     license_id: UUID,
-    _admin: str = Depends(get_admin_key)
+    admin_user: UserRole = Depends(get_admin_user)
 ):
-    """Get license by ID (without showing license key)."""
-    client = get_supabase_client()
+    """
+    Get license by ID (without showing license key).
+
+    SEC-009: Requires X-Admin-Key header AND admin/owner role.
+    """
+    # Use service role to bypass RLS
+    client = get_supabase_client(use_service_role=True)
     
     try:
         result = client.table("licenses").select("*").eq("id", str(license_id)).execute()
@@ -161,15 +168,20 @@ async def get_license(
         )
 
 
-@router.get("/licenses", response_model=List[LicenseResponse])
+@router.get("/licenses", response_model=list[LicenseResponse])
 async def list_licenses(
-    tenant_id: Optional[UUID] = None,
+    tenant_id: UUID | None = None,
     skip: int = 0,
     limit: int = 100,
-    _admin: str = Depends(get_admin_key)
+    admin_user: UserRole = Depends(get_admin_user)
 ):
-    """List licenses with optional tenant filter and pagination."""
-    client = get_supabase_client()
+    """
+    List licenses with optional tenant filter and pagination.
+
+    SEC-009: Requires X-Admin-Key header AND admin/owner role.
+    """
+    # Use service role to bypass RLS
+    client = get_supabase_client(use_service_role=True)
     
     try:
         query = client.table("licenses").select("*")
@@ -197,10 +209,15 @@ async def list_licenses(
 async def update_license(
     license_id: UUID,
     license_update: LicenseUpdate,
-    _admin: str = Depends(get_admin_key)
+    admin_user: UserRole = Depends(get_admin_user)
 ):
-    """Update license (credits, expiry, active status)."""
-    client = get_supabase_client()
+    """
+    Update license (credits, expiry, active status).
+
+    SEC-009: Requires X-Admin-Key header AND admin/owner role.
+    """
+    # Use service role to bypass RLS
+    client = get_supabase_client(use_service_role=True)
     
     try:
         # Build update data
@@ -246,14 +263,17 @@ async def update_license(
 @router.delete("/licenses/{license_id}", status_code=204)
 async def revoke_license(
     license_id: UUID,
-    _admin: str = Depends(get_admin_key)
+    admin_user: UserRole = Depends(get_admin_user)
 ):
     """
     Revoke a license (mark as inactive).
-    
+
     This does not delete the license, just marks it as inactive.
+
+    SEC-009: Requires X-Admin-Key header AND admin/owner role.
     """
-    client = get_supabase_client()
+    # Use service role to bypass RLS
+    client = get_supabase_client(use_service_role=True)
     
     try:
         result = client.table("licenses").update({

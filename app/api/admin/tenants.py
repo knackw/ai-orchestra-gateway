@@ -5,15 +5,16 @@ Internal endpoints for creating and managing tenants.
 """
 
 import logging
-from typing import List, Optional
 from datetime import datetime, timezone
 from uuid import UUID
 
 from fastapi import APIRouter, Depends, HTTPException
 from pydantic import BaseModel, ConfigDict, EmailStr, Field
+from typing import List, Optional
 
-from app.core.admin_auth import get_admin_key
+from app.core.admin_auth import get_admin_user
 from app.core.database import get_supabase_client
+from app.core.rbac import UserRole
 
 logger = logging.getLogger(__name__)
 
@@ -42,28 +43,43 @@ class TenantResponse(BaseModel):
     name: str
     email: str
     is_active: bool
+    avv_signed_at: datetime | None = None
+    avv_version: str | None = None
+    allowed_ips: Optional[List[str]] = None
     created_at: datetime
     updated_at: datetime
 
 
 class TenantUpdate(BaseModel):
     """Request model for updating a tenant."""
-    name: Optional[str] = Field(None, max_length=100)
-    email: Optional[EmailStr] = None
-    is_active: Optional[bool] = None
+    name: str | None = Field(None, max_length=100)
+    email: EmailStr | None = None
+    is_active: bool | None = None
+    allowed_ips: Optional[List[str]] = None
+
+
+class AVVUpdate(BaseModel):
+    """Request model for recording AVV signature."""
+    avv_version: str = Field(..., description="Version of the signed AVV")
+    signed_at: datetime = Field(
+        default_factory=lambda: datetime.now(timezone.utc),
+        description="Timestamp of signature"
+    )
+
 
 
 @router.post("/tenants", response_model=TenantResponse, status_code=201)
 async def create_tenant(
     tenant: TenantCreate,
-    _admin: str = Depends(get_admin_key)
+    admin_user: UserRole = Depends(get_admin_user)
 ):
     """
     Create a new tenant.
-    
-    Requires X-Admin-Key header for authentication.
+
+    SEC-009: Requires X-Admin-Key header AND admin/owner role.
     """
-    client = get_supabase_client()
+    # Use service role to bypass RLS
+    client = get_supabase_client(use_service_role=True)
     
     try:
         # Check if email already exists
@@ -105,10 +121,15 @@ async def create_tenant(
 @router.get("/tenants/{tenant_id}", response_model=TenantResponse)
 async def get_tenant(
     tenant_id: UUID,
-    _admin: str = Depends(get_admin_key)
+    admin_user: UserRole = Depends(get_admin_user)
 ):
-    """Get tenant by ID."""
-    client = get_supabase_client()
+    """
+    Get tenant by ID.
+
+    SEC-009: Requires X-Admin-Key header AND admin/owner role.
+    """
+    # Use service role to bypass RLS
+    client = get_supabase_client(use_service_role=True)
     
     try:
         result = client.table("tenants").select("*").eq("id", str(tenant_id)).execute()
@@ -131,14 +152,19 @@ async def get_tenant(
         )
 
 
-@router.get("/tenants", response_model=List[TenantResponse])
+@router.get("/tenants", response_model=list[TenantResponse])
 async def list_tenants(
     skip: int = 0,
     limit: int = 100,
-    _admin: str = Depends(get_admin_key)
+    admin_user: UserRole = Depends(get_admin_user)
 ):
-    """List all tenants with pagination."""
-    client = get_supabase_client()
+    """
+    List all tenants with pagination.
+
+    SEC-009: Requires X-Admin-Key header AND admin/owner role.
+    """
+    # Use service role to bypass RLS
+    client = get_supabase_client(use_service_role=True)
     
     try:
         result = client.table("tenants").select("*").range(skip, skip + limit - 1).execute()
@@ -157,10 +183,15 @@ async def list_tenants(
 async def update_tenant(
     tenant_id: UUID,
     tenant_update: TenantUpdate,
-    _admin: str = Depends(get_admin_key)
+    admin_user: UserRole = Depends(get_admin_user)
 ):
-    """Update tenant details."""
-    client = get_supabase_client()
+    """
+    Update tenant details.
+
+    SEC-009: Requires X-Admin-Key header AND admin/owner role.
+    """
+    # Use service role to bypass RLS
+    client = get_supabase_client(use_service_role=True)
     
     try:
         # Build update data (only include non-None fields)
@@ -198,14 +229,17 @@ async def update_tenant(
 @router.delete("/tenants/{tenant_id}", status_code=204)
 async def delete_tenant(
     tenant_id: UUID,
-    _admin: str = Depends(get_admin_key)
+    admin_user: UserRole = Depends(get_admin_user)
 ):
     """
     Soft delete a tenant (mark as inactive).
-    
+
     This does not permanently delete the tenant, just marks it as inactive.
+
+    SEC-009: Requires X-Admin-Key header AND admin/owner role.
     """
-    client = get_supabase_client()
+    # Use service role to bypass RLS
+    client = get_supabase_client(use_service_role=True)
     
     try:
         result = client.table("tenants").update({
@@ -223,9 +257,49 @@ async def delete_tenant(
         
     except HTTPException:
         raise
-    except Exception as e:
-        logger.error(f"Error deactivating tenant: {e}")
         raise HTTPException(
             status_code=500,
             detail="Internal server error"
         )
+
+
+@router.post("/tenants/{tenant_id}/avv", response_model=TenantResponse)
+async def update_tenant_avv(
+    tenant_id: UUID,
+    avv_update: AVVUpdate,
+    admin_user: UserRole = Depends(get_admin_user)
+):
+    """
+    Record AVV signature for a tenant.
+
+    SEC-009: Requires X-Admin-Key header AND admin/owner role.
+    """
+    client = get_supabase_client(use_service_role=True)
+    
+    try:
+        data = {
+            "avv_version": avv_update.avv_version,
+            "avv_signed_at": avv_update.signed_at.isoformat(),
+            "updated_at": datetime.now(timezone.utc).isoformat()
+        }
+        
+        result = client.table("tenants").update(data).eq("id", str(tenant_id)).execute()
+        
+        if not result.data:
+            raise HTTPException(
+                status_code=404,
+                detail=f"Tenant {tenant_id} not found"
+            )
+            
+        logger.info(f"Updated AVV for tenant {tenant_id}: {avv_update.avv_version}")
+        return TenantResponse(**result.data[0])
+        
+    except HTTPException:
+        raise
+    except Exception as e:
+        logger.error(f"Error updating tenant AVV: {e}")
+        raise HTTPException(
+            status_code=500,
+            detail="Internal server error"
+        )
+

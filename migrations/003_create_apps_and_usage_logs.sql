@@ -162,9 +162,8 @@ SELECT
     (50 + (random() * 150)::INTEGER) as credits_deducted,
     CASE WHEN random() > 0.95 THEN 'error' ELSE 'success' END as response_status
 FROM licenses l
-WHERE l.license_key = 'lic_demo_valid_123'
 CROSS JOIN generate_series(1, 10)  -- Create 10 demo log entries
-ON CONFLICT DO NOTHING;
+WHERE l.license_key = 'lic_demo_valid_123';
 
 -- ============================================================================
 -- PART 5: VERIFICATION QUERIES
