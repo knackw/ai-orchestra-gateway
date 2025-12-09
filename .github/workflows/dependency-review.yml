@@ -103,7 +103,7 @@ jobs:
           pip-audit --format markdown > pip-audit-installed.md || true
 
       - name: Upload pip-audit results
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v5
         if: always()
         with:
           name: pip-audit-results
@@ -172,7 +172,7 @@ jobs:
           fi
 
       - name: Upload npm audit results
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v5
         if: always()
         with:
           name: npm-audit-results
@@ -247,7 +247,7 @@ jobs:
           severity: 'CRITICAL,HIGH,MEDIUM'
 
       - name: Upload Trivy report
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v5
         if: always()
         with:
           name: trivy-security-report
@@ -291,7 +291,7 @@ jobs:
           license-checker --markdown --out ../npm-licenses.md
 
       - name: Upload license reports
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v5
         with:
           name: license-reports
           path: |
