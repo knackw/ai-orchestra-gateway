@@ -194,6 +194,17 @@ export const handlers = [
       credits_used: 0.15,
     })
   }),
+
+  // Audit logging endpoint (SEC-020)
+  http.post('/api/v1/audit/log', async ({ request }) => {
+    const body = await request.json() as any
+    return HttpResponse.json({
+      id: 'audit-event-' + Math.random().toString(36).substring(7),
+      created_at: new Date().toISOString(),
+      event_type: body.event_type,
+      success: body.success ?? true,
+    })
+  }),
 ]
 
 /**

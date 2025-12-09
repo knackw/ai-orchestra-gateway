@@ -7,7 +7,10 @@ describe('HeroSection', () => {
     render(<HeroSection />)
 
     expect(screen.getByText(/KI-Power für Ihr Business/i)).toBeInTheDocument()
-    expect(screen.getByText(/DSGVO-konform/i)).toBeInTheDocument()
+
+    // Use getAllByText since 'DSGVO-konform' appears multiple times (headline + trust badge)
+    const dsgvoElements = screen.getAllByText(/DSGVO-konform/i)
+    expect(dsgvoElements.length).toBeGreaterThan(0)
   })
 
   it('renders the subheadline', () => {
@@ -33,7 +36,10 @@ describe('HeroSection', () => {
   it('renders trust badges', () => {
     render(<HeroSection />)
 
-    expect(screen.getByText('DSGVO-konform')).toBeInTheDocument()
+    // Use getAllByText since 'DSGVO-konform' appears multiple times (headline + trust badge)
+    const dsgvoElements = screen.getAllByText('DSGVO-konform')
+    expect(dsgvoElements.length).toBeGreaterThan(0)
+
     expect(screen.getByText('EU Hosting')).toBeInTheDocument()
     expect(screen.getByText('99.9% Uptime')).toBeInTheDocument()
   })

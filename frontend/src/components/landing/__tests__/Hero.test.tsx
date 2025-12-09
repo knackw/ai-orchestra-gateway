@@ -19,7 +19,10 @@ describe('Hero Component', () => {
   it('renders subheadline with value proposition', () => {
     render(<Hero />)
     expect(screen.getByText(/Multi-Tenant AI-Proxy mit automatischer PII-Erkennung/i)).toBeInTheDocument()
-    expect(screen.getByText(/DSGVO-konform/i)).toBeInTheDocument()
+
+    // Use getAllByText since 'DSGVO-konform' appears multiple times (subheadline + trust badge)
+    const dsgvoElements = screen.getAllByText(/DSGVO-konform/i)
+    expect(dsgvoElements.length).toBeGreaterThan(0)
   })
 
   it('displays version badge', () => {
@@ -42,7 +45,10 @@ describe('Hero Component', () => {
   it('displays trust badges with icons', () => {
     render(<Hero />)
 
-    expect(screen.getByText('DSGVO-konform')).toBeInTheDocument()
+    // Use getAllByText since 'DSGVO-konform' appears multiple times (subheadline + trust badge)
+    const dsgvoElements = screen.getAllByText('DSGVO-konform')
+    expect(dsgvoElements.length).toBeGreaterThan(0)
+
     expect(screen.getByText('EU Hosting')).toBeInTheDocument()
     expect(screen.getByText('99.9% Uptime')).toBeInTheDocument()
   })

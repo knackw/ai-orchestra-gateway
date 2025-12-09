@@ -111,11 +111,12 @@ describe('PricingSection', () => {
   })
 
   it('renders all pricing cards with proper structure', () => {
-    const { container } = render(<PricingSection />)
+    render(<PricingSection />)
 
-    // Should have 3 pricing cards
-    const cards = container.querySelectorAll('[class*="Card"]')
-    expect(cards.length).toBeGreaterThanOrEqual(3)
+    // Should have 3 pricing cards - check by verifying all tier names are present
+    expect(screen.getByText('Starter')).toBeInTheDocument()
+    expect(screen.getByText('Professional')).toBeInTheDocument()
+    expect(screen.getByText('Enterprise')).toBeInTheDocument()
   })
 
   it('displays tier descriptions', () => {

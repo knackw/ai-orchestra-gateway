@@ -84,19 +84,44 @@ process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY = 'test-anon-key'
 process.env.NEXT_PUBLIC_APP_URL = 'http://localhost:3000'
 process.env.NEXT_PUBLIC_API_URL = 'http://localhost:9001'
 
-// Global test utilities
-global.ResizeObserver = vi.fn().mockImplementation(() => ({
-  observe: vi.fn(),
-  unobserve: vi.fn(),
-  disconnect: vi.fn(),
-}))
+// Mock ResizeObserver as a proper class
+class MockResizeObserver implements ResizeObserver {
+  observe = vi.fn()
+  unobserve = vi.fn()
+  disconnect = vi.fn()
 
-// Mock IntersectionObserver
-global.IntersectionObserver = vi.fn().mockImplementation(() => ({
-  observe: vi.fn(),
-  unobserve: vi.fn(),
-  disconnect: vi.fn(),
-}))
+  constructor(callback: ResizeObserverCallback) {
+    // Store callback for potential test use
+  }
+}
+global.ResizeObserver = MockResizeObserver as unknown as typeof ResizeObserver
+
+// Mock IntersectionObserver as a proper class
+class MockIntersectionObserver implements IntersectionObserver {
+  readonly root: Element | Document | null = null
+  readonly rootMargin: string = ''
+  readonly thresholds: ReadonlyArray<number> = []
+
+  observe = vi.fn()
+  unobserve = vi.fn()
+  disconnect = vi.fn()
+  takeRecords = vi.fn(() => [] as IntersectionObserverEntry[])
+
+  constructor(callback: IntersectionObserverCallback, options?: IntersectionObserverInit) {
+    // Store callback for potential test use
+  }
+}
+global.IntersectionObserver = MockIntersectionObserver as unknown as typeof IntersectionObserver
+
+// Mock navigator.clipboard
+Object.defineProperty(navigator, 'clipboard', {
+  value: {
+    writeText: vi.fn().mockResolvedValue(undefined),
+    readText: vi.fn().mockResolvedValue(''),
+  },
+  writable: true,
+  configurable: true,
+})
 
 // Mock matchMedia
 Object.defineProperty(window, 'matchMedia', {

@@ -81,7 +81,8 @@ describe('ApiKeyTable Component', () => {
     )
 
     // Keys should be masked (first 8 chars + **** + last 4 chars)
-    expect(screen.getByText(/sk_prod_1.*\*{4}.*cdef/)).toBeInTheDocument()
+    // Key is 'sk_prod_1234567890abcdef' -> 'sk_prod_1****cdef'
+    expect(screen.getByText('sk_prod_1****cdef')).toBeInTheDocument()
   })
 
   it('displays status badges correctly', () => {
@@ -124,12 +125,8 @@ describe('ApiKeyTable Component', () => {
   it('copies API key to clipboard on copy button click', async () => {
     const user = userEvent.setup()
 
-    // Mock clipboard API
-    Object.assign(navigator, {
-      clipboard: {
-        writeText: vi.fn().mockResolvedValue(undefined),
-      },
-    })
+    // Use the globally mocked clipboard from setup.ts
+    const writeTextSpy = vi.spyOn(navigator.clipboard, 'writeText')
 
     render(
       <ApiKeyTable
@@ -150,7 +147,7 @@ describe('ApiKeyTable Component', () => {
       await user.click(copyButton)
 
       await waitFor(() => {
-        expect(navigator.clipboard.writeText).toHaveBeenCalledWith(mockApiKeys[0].key)
+        expect(writeTextSpy).toHaveBeenCalledWith(mockApiKeys[0].key)
       })
     }
   })
