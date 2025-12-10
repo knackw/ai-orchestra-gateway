@@ -60,7 +60,7 @@ if settings.SENTRY_DSN:
 app = FastAPI(
     title="AI Legal Ops Gateway",
     description="Multi-tenant middleware for AI orchestration with privacy enforcement",
-    version="0.8.4",
+    version="0.8.10",
     docs_url="/docs" if settings.is_development else None,
     redoc_url="/redoc" if settings.is_development else None,
     openapi_url="/openapi.json" if settings.is_development else None,

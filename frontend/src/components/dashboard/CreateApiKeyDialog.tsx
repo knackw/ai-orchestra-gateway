@@ -13,8 +13,9 @@ import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Alert, AlertDescription } from '@/components/ui/alert'
-import { Copy, Check, AlertTriangle } from 'lucide-react'
+import { Copy, Check, AlertTriangle, Loader2 } from 'lucide-react'
 import { useToast } from '@/hooks/use-toast'
+import { createApiKey } from '@/lib/actions/api-keys'
 
 interface CreateApiKeyDialogProps {
   open: boolean
@@ -22,6 +23,12 @@ interface CreateApiKeyDialogProps {
   onSuccess?: () => void
 }
 
+/**
+ * SEC-005: Secure API Key Creation Dialog
+ *
+ * Uses server actions for secure API key creation.
+ * The API key is only shown once - users must copy it immediately.
+ */
 export function CreateApiKeyDialog({
   open,
   onOpenChange,
@@ -36,8 +43,8 @@ export function CreateApiKeyDialog({
   const handleCreate = async () => {
     if (!name.trim()) {
       toast({
-        title: 'Error',
-        description: 'Please enter a name for the API key',
+        title: 'Fehler',
+        description: 'Bitte geben Sie einen Namen für den API-Schlüssel ein',
         variant: 'destructive',
       })
       return
@@ -45,25 +52,30 @@ export function CreateApiKeyDialog({
 
     setLoading(true)
     try {
-      // TODO: Replace with actual API call
-      await new Promise((resolve) => setTimeout(resolve, 1000))
+      // Use the secure server action
+      const result = await createApiKey(name.trim())
 
-      // Mock API key - In production, this comes from the API
-      const mockKey = `alo_${Math.random().toString(36).substring(2, 15)}${Math.random().toString(36).substring(2, 15)}`
+      if (result.success && result.data) {
+        setCreatedKey(result.data.key)
+        toast({
+          title: 'Erfolg',
+          description: 'API-Schlüssel wurde erfolgreich erstellt',
+        })
 
-      setCreatedKey(mockKey)
-      toast({
-        title: 'Success',
-        description: 'API key created successfully',
-      })
-
-      if (onSuccess) {
-        onSuccess()
+        if (onSuccess) {
+          onSuccess()
+        }
+      } else {
+        toast({
+          title: 'Fehler',
+          description: result.error || 'API-Schlüssel konnte nicht erstellt werden',
+          variant: 'destructive',
+        })
       }
     } catch {
       toast({
-        title: 'Error',
-        description: 'Failed to create API key',
+        title: 'Fehler',
+        description: 'API-Schlüssel konnte nicht erstellt werden',
         variant: 'destructive',
       })
     } finally {
@@ -73,13 +85,21 @@ export function CreateApiKeyDialog({
 
   const handleCopy = async () => {
     if (createdKey) {
-      await navigator.clipboard.writeText(createdKey)
-      setCopied(true)
-      setTimeout(() => setCopied(false), 2000)
-      toast({
-        title: 'Copied',
-        description: 'API key copied to clipboard',
-      })
+      try {
+        await navigator.clipboard.writeText(createdKey)
+        setCopied(true)
+        setTimeout(() => setCopied(false), 2000)
+        toast({
+          title: 'Kopiert',
+          description: 'API-Schlüssel wurde in die Zwischenablage kopiert',
+        })
+      } catch {
+        toast({
+          title: 'Fehler',
+          description: 'Kopieren fehlgeschlagen. Bitte manuell kopieren.',
+          variant: 'destructive',
+        })
+      }
     }
   }
 
@@ -95,28 +115,35 @@ export function CreateApiKeyDialog({
       <DialogContent className="sm:max-w-[500px]">
         <DialogHeader>
           <DialogTitle>
-            {createdKey ? 'API Key Created' : 'Create New API Key'}
+            {createdKey ? 'API-Schlüssel erstellt' : 'Neuen API-Schlüssel erstellen'}
           </DialogTitle>
           <DialogDescription>
             {createdKey
-              ? 'Save this key somewhere safe. You won&apos;t be able to see it again.'
-              : 'Create a new API key to access the AI Orchestra API.'}
+              ? 'Speichern Sie diesen Schlüssel sicher. Sie werden ihn nicht erneut sehen können.'
+              : 'Erstellen Sie einen neuen API-Schlüssel für den Zugriff auf die AI Orchestra API.'}
           </DialogDescription>
         </DialogHeader>
 
         {!createdKey ? (
           <div className="space-y-4 py-4">
             <div className="space-y-2">
-              <Label htmlFor="name">Key Name</Label>
+              <Label htmlFor="name">Schlüsselname</Label>
               <Input
                 id="name"
-                placeholder="e.g., Production Key"
+                placeholder="z.B. Produktions-Schlüssel"
                 value={name}
                 onChange={(e) => setName(e.target.value)}
                 disabled={loading}
+                maxLength={100}
+                onKeyDown={(e) => {
+                  if (e.key === 'Enter' && !loading && name.trim()) {
+                    e.preventDefault()
+                    handleCreate()
+                  }
+                }}
               />
               <p className="text-sm text-muted-foreground">
-                A descriptive name to help you identify this key
+                Ein beschreibender Name, um diesen Schlüssel zu identifizieren
               </p>
             </div>
           </div>
@@ -125,26 +152,27 @@ export function CreateApiKeyDialog({
             <Alert variant="destructive">
               <AlertTriangle className="h-4 w-4" />
               <AlertDescription>
-                Make sure to copy your API key now. You won&apos;t be able to see it
-                again!
+                Kopieren Sie Ihren API-Schlüssel jetzt. Sie werden ihn nicht erneut
+                sehen können!
               </AlertDescription>
             </Alert>
 
             <div className="space-y-2">
-              <Label>Your API Key</Label>
+              <Label>Ihr API-Schlüssel</Label>
               <div className="flex gap-2">
                 <Input
                   value={createdKey}
                   readOnly
-                  className="font-mono"
+                  className="font-mono text-sm"
                 />
                 <Button
                   size="icon"
                   variant="outline"
                   onClick={handleCopy}
+                  title="In Zwischenablage kopieren"
                 >
                   {copied ? (
-                    <Check className="h-4 w-4" />
+                    <Check className="h-4 w-4 text-green-600" />
                   ) : (
                     <Copy className="h-4 w-4" />
                   )}
@@ -158,15 +186,16 @@ export function CreateApiKeyDialog({
           {!createdKey ? (
             <>
               <Button variant="outline" onClick={handleClose} disabled={loading}>
-                Cancel
+                Abbrechen
               </Button>
-              <Button onClick={handleCreate} disabled={loading}>
-                {loading ? 'Creating...' : 'Create Key'}
+              <Button onClick={handleCreate} disabled={loading || !name.trim()}>
+                {loading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+                {loading ? 'Erstelle...' : 'Schlüssel erstellen'}
               </Button>
             </>
           ) : (
             <Button onClick={handleClose} className="w-full">
-              Done
+              Fertig
             </Button>
           )}
         </DialogFooter>
